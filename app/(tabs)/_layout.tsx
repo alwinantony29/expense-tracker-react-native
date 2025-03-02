@@ -49,7 +49,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="budget"
         options={{
-          title: "Explore",
+          title: "Budget",
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons name="wallet" size={24} color={color} />
           ),
