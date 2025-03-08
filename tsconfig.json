@@ -1,6 +1,14 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
+    "lib": ["es2015", "es2016", "es2017", "esnext"],
+    "jsx": "react-native",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "strict": true,
     "paths": {
       "@/*": [

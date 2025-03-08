@@ -1,40 +1,27 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-
-const categories = [
-  {
-    id: "1",
-    name: "Shopping",
-    amount: 854.5,
-    percentage: 35,
-    color: "#3B82F6",
-  },
-  { id: "2", name: "Food", amount: 425.8, percentage: 25, color: "#10B981" },
-  {
-    id: "3",
-    name: "Transport",
-    amount: 325.2,
-    percentage: 20,
-    color: "#F59E0B",
-  },
-  {
-    id: "4",
-    name: "Entertainment",
-    amount: 154.3,
-    percentage: 15,
-    color: "#8B5CF6",
-  },
-  { id: "5", name: "Others", amount: 95.7, percentage: 5, color: "#EC4899" },
-];
+import { useTransactions } from "@/context/TransactionContext";
+import { categories } from "@/const";
 
 export default function StatisticsScreen() {
+  const { transactions, getTotalExpenses } = useTransactions();
+
+  const totalExpense = getTotalExpenses();
+
+  const spendingByCategories = useMemo(() => {
+    return transactions.reduce((acc, curr) => {
+      if (curr.amount > 0) return acc;
+      acc[curr.category] = (acc[curr.category] || 0) + curr.amount;
+      return acc;
+    }, {} as Record<string, number>);
+  }, [transactions]);
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
-        {/* Header */}
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Statistics</Text>
           <Pressable style={styles.filterButton}>
@@ -55,7 +42,7 @@ export default function StatisticsScreen() {
           end={{ x: 1, y: 1 }}
         >
           <Text style={styles.totalLabel}>Total Spending</Text>
-          <Text style={styles.totalAmount}>$1,855.50</Text>
+          <Text style={styles.totalAmount}>$ {totalExpense}</Text>
           <View style={styles.percentageChange}>
             <MaterialCommunityIcons name="arrow-up" size={20} color="#4ADE80" />
             <Text style={styles.changeText}>12.5% from last month</Text>
@@ -66,34 +53,40 @@ export default function StatisticsScreen() {
         <View style={styles.categoriesSection}>
           <Text style={styles.sectionTitle}>Spending by Category</Text>
 
-          {categories.map((category) => (
-            <Pressable key={category.id} style={styles.categoryItem}>
-              <View style={styles.categoryHeader}>
-                <View style={styles.categoryLeft}>
+          {Object.entries(spendingByCategories).map(([id, amount]) => {
+            const category = categories.find((cat) => cat.id === id);
+            if (!category) return <View key={id}></View>;
+
+            const percentage = Math.round(category.budget / (amount * -1));
+            return (
+              <Pressable key={category.id} style={styles.categoryItem}>
+                <View style={styles.categoryHeader}>
+                  <View style={styles.categoryLeft}>
+                    <View
+                      style={[
+                        styles.categoryDot,
+                        { backgroundColor: category.color },
+                      ]}
+                    />
+                    <Text style={styles.categoryName}>{category.name}</Text>
+                  </View>
+                  <Text style={styles.categoryAmount}>$ {amount * -1}</Text>
+                </View>
+                <View style={styles.progressBarContainer}>
                   <View
                     style={[
-                      styles.categoryDot,
-                      { backgroundColor: category.color },
+                      styles.progressBar,
+                      {
+                        width: `${percentage}%`,
+                        backgroundColor: category.color,
+                      },
                     ]}
                   />
-                  <Text style={styles.categoryName}>{category.name}</Text>
                 </View>
-                <Text style={styles.categoryAmount}>${category.amount}</Text>
-              </View>
-              <View style={styles.progressBarContainer}>
-                <View
-                  style={[
-                    styles.progressBar,
-                    {
-                      width: `${category.percentage}%`,
-                      backgroundColor: category.color,
-                    },
-                  ]}
-                />
-              </View>
-              <Text style={styles.percentageText}>{category.percentage}%</Text>
-            </Pressable>
-          ))}
+                <Text style={styles.percentageText}>{}%</Text>
+              </Pressable>
+            );
+          })}
         </View>
       </ScrollView>
     </SafeAreaView>

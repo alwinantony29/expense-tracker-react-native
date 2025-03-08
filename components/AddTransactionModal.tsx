@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   View,
   Text,
@@ -12,39 +12,22 @@ import {
   Platform,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { toast } from "sonner-native";
+import { useTransactions } from "@/context/TransactionContext";
+import { useMMKVObject } from "react-native-mmkv";
+import { storage, STORAGE_KEYS } from "@/models/db";
+import { Category } from "@/types";
+import { categories as defaultCategories } from "@/const";
 
 interface AddTransactionModalProps {
   visible: boolean;
   onClose: () => void;
-  onAddTransaction: (transaction: any) => void;
 }
-
-const categories = [
-  { id: "shopping", name: "Shopping", icon: "cart", color: "#3B82F6" },
-  { id: "food", name: "Food & Dining", icon: "food", color: "#10B981" },
-  { id: "transport", name: "Transportation", icon: "car", color: "#F59E0B" },
-  {
-    id: "entertainment",
-    name: "Entertainment",
-    icon: "movie",
-    color: "#8B5CF6",
-  },
-  {
-    id: "utilities",
-    name: "Utilities",
-    icon: "lightning-bolt",
-    color: "#EC4899",
-  },
-  { id: "health", name: "Health", icon: "medical-bag", color: "#EF4444" },
-  { id: "income", name: "Income", icon: "bank-transfer-in", color: "#10B981" },
-];
 
 export default function AddTransactionModal({
   visible,
   onClose,
-  onAddTransaction,
 }: AddTransactionModalProps) {
+  const { addTransaction } = useTransactions();
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -52,6 +35,10 @@ export default function AddTransactionModal({
     "expense"
   );
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [categories = defaultCategories] = useMMKVObject<Category[]>(
+    STORAGE_KEYS.CATEGORIES,
+    storage
+  );
 
   const resetForm = () => {
     setTitle("");
@@ -89,8 +76,7 @@ export default function AddTransactionModal({
       date: date,
     };
 
-    onAddTransaction(newTransaction);
-    // toast.success("Transaction added successfully");
+    addTransaction(newTransaction);
     resetForm();
     onClose();
   };

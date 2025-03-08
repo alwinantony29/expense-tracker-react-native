@@ -1,18 +1,25 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
+import {
+  MaterialCommunityIcons,
+  Ionicons,
+  MaterialIcons,
+} from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTransactions } from "../../context/TransactionContext";
 import AddTransactionModal from "@/components/AddTransactionModal";
 
 export default function HomeScreen() {
+  // TODO: add sentry
   const [modalVisible, setModalVisible] = useState(false);
-  const { transactions, addTransaction } = useTransactions();
+  const { transactions, getTotalBalance, getTotalExpenses, getTotalIncome } =
+    useTransactions();
 
-  const handleAddTransaction = (newTransaction: any) => {
-    addTransaction(newTransaction);
-  };
+  const totalBalance = getTotalBalance();
+  const totalExpense = getTotalExpenses();
+  const totalIncome = getTotalIncome();
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
@@ -38,7 +45,7 @@ export default function HomeScreen() {
           end={{ x: 1, y: 1 }}
         >
           <Text style={styles.balanceLabel}>Total Balance</Text>
-          <Text style={styles.balanceAmount}>$4,285.50</Text>
+          <Text style={styles.balanceAmount}>$ {totalBalance}</Text>
           <View style={styles.balanceStats}>
             <View style={styles.statItem}>
               <MaterialCommunityIcons
@@ -47,7 +54,7 @@ export default function HomeScreen() {
                 color="#4ADE80"
               />
               <Text style={styles.statLabel}>Income</Text>
-              <Text style={styles.statAmount}>$5,240</Text>
+              <Text style={styles.statAmount}>$ {totalIncome}</Text>
             </View>
             <View style={styles.statDivider} />
             <View style={styles.statItem}>
@@ -57,7 +64,7 @@ export default function HomeScreen() {
                 color="#FB7185"
               />
               <Text style={styles.statLabel}>Expenses</Text>
-              <Text style={styles.statAmount}>$954.50</Text>
+              <Text style={styles.statAmount}>$ {totalExpense}</Text>
             </View>
           </View>
         </LinearGradient>
@@ -85,13 +92,10 @@ export default function HomeScreen() {
           </Pressable>
           <Pressable style={styles.actionButton}>
             <View style={[styles.actionIcon, { backgroundColor: "#FEF3C7" }]}>
-              <MaterialCommunityIcons
-                name="chart-box"
-                size={24}
-                color="#D97706"
-              />
+              <MaterialIcons name="category" size={24} color="black" />
             </View>
-            <Text style={styles.actionText}>Stats</Text>
+            {/* TODO: categories page */}
+            <Text style={styles.actionText}>Categories</Text>
           </Pressable>
         </View>
 
@@ -145,7 +149,6 @@ export default function HomeScreen() {
       <AddTransactionModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
-        onAddTransaction={handleAddTransaction}
       />
     </SafeAreaView>
   );

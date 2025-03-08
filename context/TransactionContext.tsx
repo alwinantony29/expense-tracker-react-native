@@ -1,14 +1,7 @@
-import { storage, STORAGE_KEYS } from "../lib/storage";
+import { Transaction } from "@/types";
+import { storage, STORAGE_KEYS } from "../models/db";
 import React, { createContext, useContext, ReactNode } from "react";
 import { useMMKVObject } from "react-native-mmkv";
-
-export interface Transaction {
-  id: string;
-  title: string;
-  amount: number;
-  category: string;
-  date: string;
-}
 
 interface TransactionContextType {
   transactions: Transaction[];
@@ -28,11 +21,13 @@ export const TransactionProvider = ({ children }: { children: ReactNode }) => {
     STORAGE_KEYS.TRANSACTIONS,
     storage
   );
-  console.log("🚀 ~ TransactionProvider ~ transactions:", transactions);
+  console.log("🚀 ~ transactions.length:", transactions.length);
 
-  const addTransaction = (transaction: Transaction) => {
-    console.log("setTransaction", transaction);
-    setTransactions([transaction, ...transactions]);
+  const addTransaction = (transaction: Omit<Transaction, "id">) => {
+    setTransactions([
+      { ...transaction, id: new Date().toString() },
+      ...transactions,
+    ]);
   };
 
   const deleteTransaction = (id: string) => {
