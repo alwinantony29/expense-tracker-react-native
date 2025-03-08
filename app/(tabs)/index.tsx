@@ -1,45 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-
-const transactions = [
-  {
-    id: "1",
-    title: "Grocery Shopping",
-    amount: -85.5,
-    category: "shopping",
-    date: "2024-02-15",
-  },
-  {
-    id: "2",
-    title: "Salary Deposit",
-    amount: 3200.0,
-    category: "income",
-    date: "2024-02-14",
-  },
-  {
-    id: "3",
-    title: "Netflix Subscription",
-    amount: -15.99,
-    category: "entertainment",
-    date: "2024-02-13",
-  },
-  {
-    id: "4",
-    title: "Restaurant",
-    amount: -45.8,
-    category: "food",
-    date: "2024-02-12",
-  },
-];
+import { useTransactions } from "../../context/TransactionContext";
+import AddTransactionModal from "@/components/AddTransactionModal";
 
 export default function HomeScreen() {
+  const [modalVisible, setModalVisible] = useState(false);
+  const { transactions, addTransaction } = useTransactions();
+
+  const handleAddTransaction = (newTransaction: any) => {
+    addTransaction(newTransaction);
+  };
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
-        {/* Header */}
         <View style={styles.header}>
           <View>
             <Text style={styles.greeting}>Good morning,</Text>
@@ -88,7 +64,10 @@ export default function HomeScreen() {
 
         {/* Quick Actions */}
         <View style={styles.quickActions}>
-          <Pressable style={styles.actionButton}>
+          <Pressable
+            style={styles.actionButton}
+            onPress={() => setModalVisible(true)}
+          >
             <View style={[styles.actionIcon, { backgroundColor: "#E0F2FE" }]}>
               <Ionicons name="add" size={24} color="#0284C7" />
             </View>
@@ -163,6 +142,11 @@ export default function HomeScreen() {
           ))}
         </View>
       </ScrollView>
+      <AddTransactionModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onAddTransaction={handleAddTransaction}
+      />
     </SafeAreaView>
   );
 }
