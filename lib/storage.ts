@@ -4,8 +4,8 @@ export const storage = new MMKV();
 
 export const STORAGE_KEYS = {
   TAGS: "@tags",
-  CURRENCY: "@selected_currency",
   TRANSACTIONS: "@transactions",
+  SETTINGS: "@settings",
 } as const;
 
 export const CURRENCIES = [
