@@ -1,5 +1,5 @@
-import { STORAGE_KEYS } from "../models/db";
-import React, { createContext, useState, useContext, ReactNode } from "react";
+import { storage, STORAGE_KEYS } from "../models/db";
+import { createContext, useContext, ReactNode } from "react";
 import { useMMKVObject } from "react-native-mmkv";
 
 export interface UserProfile {
@@ -15,7 +15,7 @@ export interface UserSettings {
 }
 
 interface UserContextType {
-  profile?: UserProfile;
+  profile: UserProfile;
   settings: UserSettings;
   updateProfile: (profile: Partial<UserProfile>) => void;
   updateSettings: (settings: Partial<UserSettings>) => void;
@@ -30,8 +30,13 @@ const initialSettings: UserSettings = {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
-  const [profile, setProfile] = useMMKVObject<UserProfile>(STORAGE_KEYS.USER);
-  const [settings, setSettings] = useState<UserSettings>(initialSettings);
+  const [profile = {}, setProfile] = useMMKVObject<UserProfile>(
+    STORAGE_KEYS.USER
+  );
+  const [settings = initialSettings, setSettings] = useMMKVObject<UserSettings>(
+    STORAGE_KEYS.SETTINGS,
+    storage
+  );
 
   const updateProfile = (updatedProfile: Partial<UserProfile>) => {
     const newProfile = { ...profile, ...updatedProfile };

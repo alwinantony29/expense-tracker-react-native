@@ -10,6 +10,19 @@ interface TransactionContextType {
   getTotalBalance: () => number;
   getTotalIncome: () => number;
   getTotalExpenses: () => number;
+
+  categories: Category[];
+  addCategory: (category: Category) => void;
+  deleteCategory: (id: string) => void;
+  getCategorySpending: (categoryId: string) => number;
+}
+
+export interface Category {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
+  type: "income" | "expense";
 }
 
 const TransactionContext = createContext<TransactionContextType | undefined>(
@@ -18,6 +31,11 @@ const TransactionContext = createContext<TransactionContextType | undefined>(
 
 export const TransactionProvider = ({ children }: { children: ReactNode }) => {
   const [transactions = [], setTransactions] = useMMKVObject<Transaction[]>(
+    STORAGE_KEYS.TRANSACTIONS,
+    storage
+  );
+
+  const [categories = [], setCategories] = useMMKVObject<Category[]>(
     STORAGE_KEYS.TRANSACTIONS,
     storage
   );
@@ -57,15 +75,38 @@ export const TransactionProvider = ({ children }: { children: ReactNode }) => {
     );
   };
 
+  const addCategory = (category: Category) => {
+    const updatedCategories = [...categories, category];
+    setCategories(updatedCategories);
+  };
+  const deleteCategory = (id: string) => {
+    const updatedCategories = categories.filter(
+      (category) => category.id !== id
+    );
+    setCategories(updatedCategories);
+  };
+
+  const getCategorySpending = (categoryId: string) => {
+    return Math.abs(
+      transactions
+        .filter((transaction) => transaction.category === categoryId)
+        .reduce((total, transaction) => total + transaction.amount, 0)
+    );
+  };
+
   return (
     <TransactionContext.Provider
       value={{
+        categories,
+        addCategory,
+        deleteCategory,
         transactions,
         addTransaction,
         deleteTransaction,
         getTotalBalance,
         getTotalIncome,
         getTotalExpenses,
+        getCategorySpending,
       }}
     >
       {children}

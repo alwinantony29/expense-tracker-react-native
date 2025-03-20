@@ -7,7 +7,8 @@ export const STORAGE_KEYS = {
   CATEGORIES: "@categories",
   TRANSACTIONS: "@transactions",
   SETTINGS: "@settings",
-  BUDGETS: "budgets",
+  BUDGETS: "@budgets",
+  USER: "@user",
 } as const;
 
 export default appSchema({
