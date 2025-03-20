@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import {
   View,
   Text,
@@ -9,6 +9,9 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useUser } from "../../context/UserContext";
+import EditProfileModal from "../../components/EditProfileModal";
+import { toast } from "sonner-native";
 
 const menuItems = [
   {
@@ -16,41 +19,89 @@ const menuItems = [
     title: "Account Settings",
     icon: "account-cog",
     color: "#3B82F6",
+    action: "account",
   },
   {
     id: "2",
     title: "Notifications",
     icon: "bell",
     color: "#10B981",
+    action: "notifications",
   },
   {
     id: "3",
     title: "Payment Methods",
     icon: "credit-card",
     color: "#F59E0B",
+    action: "payment",
   },
   {
     id: "4",
     title: "Security",
     icon: "shield-check",
     color: "#8B5CF6",
+    action: "security",
   },
   {
     id: "5",
     title: "Help & Support",
     icon: "help-circle",
     color: "#EC4899",
+    action: "help",
   },
 ];
 
 export default function ProfileScreen() {
+  const { profile, settings, updateProfile, updateSettings } = useUser();
+  const [editProfileVisible, setEditProfileVisible] = useState(false);
+
+  const handleMenuItemPress = (action: string) => {
+    switch (action) {
+      case "account":
+        setEditProfileVisible(true);
+        break;
+      case "notifications":
+        updateSettings({ notifications: !settings.notifications });
+        toast.success(
+          `Notifications ${settings.notifications ? "disabled" : "enabled"}`
+        );
+        break;
+      case "payment":
+        toast.info("Payment methods feature coming soon");
+        break;
+      case "security":
+        toast.info("Security settings feature coming soon");
+        break;
+      case "help":
+        toast.info("Help & Support feature coming soon");
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleUpdateProfile = (updatedProfile: any) => {
+    updateProfile(updatedProfile);
+  };
+
+  const handleToggleDarkMode = () => {
+    updateSettings({ darkMode: !settings.darkMode });
+  };
+
+  const handleToggleNotifications = () => {
+    updateSettings({ notifications: !settings.notifications });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Profile</Text>
-          <Pressable style={styles.settingsButton}>
+          <Pressable
+            style={styles.settingsButton}
+            onPress={() => toast.info("Settings feature coming soon")}
+          >
             <MaterialCommunityIcons name="cog" size={24} color="#64748B" />
           </Pressable>
         </View>
@@ -66,11 +117,14 @@ export default function ProfileScreen() {
               />
             </View>
             <View style={styles.profileInfo}>
-              <Text style={styles.name}>Alex Johnson</Text>
-              <Text style={styles.email}>alex.johnson@example.com</Text>
+              <Text style={styles.name}>{profile.name}</Text>
+              <Text style={styles.email}>{profile.email}</Text>
             </View>
           </View>
-          <Pressable style={styles.editButton}>
+          <Pressable
+            style={styles.editButton}
+            onPress={() => setEditProfileVisible(true)}
+          >
             <Text style={styles.editButtonText}>Edit Profile</Text>
           </Pressable>
         </View>
@@ -78,7 +132,11 @@ export default function ProfileScreen() {
         {/* Menu Items */}
         <View style={styles.menuSection}>
           {menuItems.map((item) => (
-            <Pressable key={item.id} style={styles.menuItem}>
+            <Pressable
+              key={item.id}
+              style={styles.menuItem}
+              onPress={() => handleMenuItemPress(item.action)}
+            >
               <View style={styles.menuLeft}>
                 <View
                   style={[
@@ -109,21 +167,39 @@ export default function ProfileScreen() {
           <View style={styles.preferenceItem}>
             <Text style={styles.preferenceTitle}>Dark Mode</Text>
             <Switch
-              value={false}
+              value={settings.darkMode}
               trackColor={{ false: "#E2E8F0", true: "#93C5FD" }}
-              thumbColor={false ? "#3B82F6" : "#FFFFFF"}
+              thumbColor={settings.darkMode ? "#3B82F6" : "#FFFFFF"}
+              onValueChange={handleToggleDarkMode}
             />
           </View>
           <View style={styles.preferenceItem}>
             <Text style={styles.preferenceTitle}>Push Notifications</Text>
             <Switch
-              value={true}
+              value={settings.notifications}
               trackColor={{ false: "#E2E8F0", true: "#93C5FD" }}
-              thumbColor={true ? "#3B82F6" : "#FFFFFF"}
+              thumbColor={settings.notifications ? "#3B82F6" : "#FFFFFF"}
+              onValueChange={handleToggleNotifications}
             />
           </View>
         </View>
+
+        {/* Logout Button */}
+        <Pressable
+          style={styles.logoutButton}
+          onPress={() => toast.info("Logout feature coming soon")}
+        >
+          <MaterialCommunityIcons name="logout" size={20} color="#EF4444" />
+          <Text style={styles.logoutText}>Logout</Text>
+        </Pressable>
       </ScrollView>
+
+      <EditProfileModal
+        visible={editProfileVisible}
+        onClose={() => setEditProfileVisible(false)}
+        currentProfile={profile}
+        onUpdateProfile={handleUpdateProfile}
+      />
     </SafeAreaView>
   );
 }
@@ -253,5 +329,22 @@ const styles = StyleSheet.create({
   preferenceTitle: {
     fontSize: 14,
     color: "#0F172A",
+  },
+  logoutButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginHorizontal: 20,
+    marginBottom: 40,
+    marginTop: 20,
+    padding: 16,
+    backgroundColor: "#FEF2F2",
+    borderRadius: 12,
+  },
+  logoutText: {
+    color: "#EF4444",
+    fontSize: 16,
+    fontWeight: "600",
+    marginLeft: 8,
   },
 });

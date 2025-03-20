@@ -1,32 +1,31 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import {
-  MaterialCommunityIcons,
-  Ionicons,
-  MaterialIcons,
-} from "@expo/vector-icons";
+import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import AddTransactionModal from "../../components/AddTransactionModal";
 import { useTransactions } from "../../context/TransactionContext";
-import AddTransactionModal from "@/components/AddTransactionModal";
+import { useUser } from "../../context/UserContext";
 
 export default function HomeScreen() {
-  // TODO: add sentry
-  const [modalVisible, setModalVisible] = useState(false);
-  const { transactions, getTotalBalance, getTotalExpenses, getTotalIncome } =
-    useTransactions();
-
-  const totalBalance = getTotalBalance();
-  const totalExpense = getTotalExpenses();
-  const totalIncome = getTotalIncome();
+  const [transactionModalVisible, setTransactionModalVisible] = useState(false);
+  const {
+    transactions,
+    categories,
+    getTotalBalance,
+    getTotalIncome,
+    getTotalExpenses,
+  } = useTransactions();
+  const { profile } = useUser();
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
+        {/* Header */}
         <View style={styles.header}>
           <View>
             <Text style={styles.greeting}>Good morning,</Text>
-            <Text style={styles.userName}>Alex</Text>
+            <Text style={styles.userName}>{profile.name?.split(" ")[0]}</Text>
           </View>
           <Pressable style={styles.profileButton}>
             <MaterialCommunityIcons
@@ -45,7 +44,9 @@ export default function HomeScreen() {
           end={{ x: 1, y: 1 }}
         >
           <Text style={styles.balanceLabel}>Total Balance</Text>
-          <Text style={styles.balanceAmount}>$ {totalBalance}</Text>
+          <Text style={styles.balanceAmount}>
+            ${getTotalBalance().toFixed(2)}
+          </Text>
           <View style={styles.balanceStats}>
             <View style={styles.statItem}>
               <MaterialCommunityIcons
@@ -54,7 +55,9 @@ export default function HomeScreen() {
                 color="#4ADE80"
               />
               <Text style={styles.statLabel}>Income</Text>
-              <Text style={styles.statAmount}>$ {totalIncome}</Text>
+              <Text style={styles.statAmount}>
+                ${getTotalIncome().toFixed(2)}
+              </Text>
             </View>
             <View style={styles.statDivider} />
             <View style={styles.statItem}>
@@ -64,7 +67,9 @@ export default function HomeScreen() {
                 color="#FB7185"
               />
               <Text style={styles.statLabel}>Expenses</Text>
-              <Text style={styles.statAmount}>$ {totalExpense}</Text>
+              <Text style={styles.statAmount}>
+                ${getTotalExpenses().toFixed(2)}
+              </Text>
             </View>
           </View>
         </LinearGradient>
@@ -73,7 +78,7 @@ export default function HomeScreen() {
         <View style={styles.quickActions}>
           <Pressable
             style={styles.actionButton}
-            onPress={() => setModalVisible(true)}
+            onPress={() => setTransactionModalVisible(true)}
           >
             <View style={[styles.actionIcon, { backgroundColor: "#E0F2FE" }]}>
               <Ionicons name="add" size={24} color="#0284C7" />
@@ -92,9 +97,8 @@ export default function HomeScreen() {
           </Pressable>
           <Pressable style={styles.actionButton}>
             <View style={[styles.actionIcon, { backgroundColor: "#FEF3C7" }]}>
-              <MaterialIcons name="category" size={24} color="black" />
+              <MaterialCommunityIcons name="tag" size={24} color="#D97706" />
             </View>
-            {/* TODO: categories page */}
             <Text style={styles.actionText}>Categories</Text>
           </Pressable>
         </View>
@@ -108,47 +112,65 @@ export default function HomeScreen() {
             </Pressable>
           </View>
 
-          {transactions.map((transaction) => (
-            <Pressable key={transaction.id} style={styles.transaction}>
-              <View style={styles.transactionLeft}>
-                <View
+          {transactions.slice(0, 5).map((transaction) => {
+            const category = categories.find(
+              (cat) => cat.id === transaction.category
+            );
+
+            return (
+              <Pressable key={transaction.id} style={styles.transaction}>
+                <View style={styles.transactionLeft}>
+                  <View
+                    style={[
+                      styles.categoryIcon,
+                      {
+                        backgroundColor: category
+                          ? category.color
+                          : transaction.amount > 0
+                          ? "#10B981"
+                          : "#EF4444",
+                      },
+                    ]}
+                  >
+                    <MaterialCommunityIcons
+                      name={
+                        category
+                          ? category.icon
+                          : transaction.amount > 0
+                          ? "bank-transfer-in"
+                          : ("cart" as any)
+                      }
+                      size={20}
+                      color="#FFFFFF"
+                    />
+                  </View>
+                  <View>
+                    <Text style={styles.transactionTitle}>
+                      {transaction.title}
+                    </Text>
+                    <Text style={styles.transactionDate}>
+                      {transaction.date}
+                    </Text>
+                  </View>
+                </View>
+                <Text
                   style={[
-                    styles.categoryIcon,
-                    {
-                      backgroundColor:
-                        transaction.amount > 0 ? "#F0FDF4" : "#FEF2F2",
-                    },
+                    styles.transactionAmount,
+                    { color: transaction.amount > 0 ? "#16A34A" : "#DC2626" },
                   ]}
                 >
-                  <MaterialCommunityIcons
-                    name={transaction.amount > 0 ? "bank-transfer-in" : "cart"}
-                    size={20}
-                    color={transaction.amount > 0 ? "#16A34A" : "#DC2626"}
-                  />
-                </View>
-                <View>
-                  <Text style={styles.transactionTitle}>
-                    {transaction.title}
-                  </Text>
-                  <Text style={styles.transactionDate}>{transaction.date}</Text>
-                </View>
-              </View>
-              <Text
-                style={[
-                  styles.transactionAmount,
-                  { color: transaction.amount > 0 ? "#16A34A" : "#DC2626" },
-                ]}
-              >
-                {transaction.amount > 0 ? "+" : ""}
-                {transaction.amount.toFixed(2)}
-              </Text>
-            </Pressable>
-          ))}
+                  {transaction.amount > 0 ? "+" : ""}
+                  {transaction.amount.toFixed(2)}
+                </Text>
+              </Pressable>
+            );
+          })}
         </View>
       </ScrollView>
+
       <AddTransactionModal
-        visible={modalVisible}
-        onClose={() => setModalVisible(false)}
+        visible={transactionModalVisible}
+        onClose={() => setTransactionModalVisible(false)}
       />
     </SafeAreaView>
   );
@@ -251,8 +273,9 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#64748B",
   },
-  transactionsSection: {
+  categoriesSection: {
     paddingHorizontal: 20,
+    marginBottom: 24,
   },
   sectionHeader: {
     flexDirection: "row",
@@ -269,6 +292,43 @@ const styles = StyleSheet.create({
     color: "#3B82F6",
     fontSize: 14,
   },
+  categoriesGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+  },
+  categoryCard: {
+    width: "48%",
+    backgroundColor: "#FFFFFF",
+    padding: 16,
+    borderRadius: 16,
+    marginBottom: 12,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  categoryIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  categoryName: {
+    fontSize: 14,
+    color: "#0F172A",
+    fontWeight: "500",
+  },
+  transactionsSection: {
+    paddingHorizontal: 20,
+  },
   transaction: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -280,14 +340,6 @@ const styles = StyleSheet.create({
   transactionLeft: {
     flexDirection: "row",
     alignItems: "center",
-  },
-  categoryIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
   },
   transactionTitle: {
     fontSize: 14,

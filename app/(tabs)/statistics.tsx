@@ -1,27 +1,47 @@
-import React, { useMemo } from "react";
+import React, { useState } from "react";
 import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { useTransactions } from "@/context/TransactionContext";
-import { categories } from "@/const";
+import { useTransactions } from "../../context/TransactionContext";
 
 export default function StatisticsScreen() {
-  const { transactions, getTotalExpenses } = useTransactions();
+  const [period, setPeriod] = useState("month");
+  const { transactions, categories, getTotalExpenses } = useTransactions();
 
-  const totalExpense = getTotalExpenses();
+  // Filter expense transactions
+  const expenseTransactions = transactions.filter(
+    (transaction) => transaction.amount < 0
+  );
 
-  const spendingByCategories = useMemo(() => {
-    return transactions.reduce((acc, curr) => {
-      if (curr.amount > 0) return acc;
-      acc[curr.category] = (acc[curr.category] || 0) + curr.amount;
-      return acc;
-    }, {} as Record<string, number>);
-  }, [transactions]);
+  // Calculate total expenses
+  const totalExpenses = getTotalExpenses();
+
+  // Calculate spending by category
+  const categorySpending = categories
+    .filter((category) => category.type === "expense")
+    .map((category) => {
+      const spent = Math.abs(
+        expenseTransactions
+          .filter((transaction) => transaction.category === category.id)
+          .reduce((total, transaction) => total + transaction.amount, 0)
+      );
+
+      return {
+        id: category.id,
+        name: category.name,
+        amount: spent,
+        percentage: totalExpenses > 0 ? (spent / totalExpenses) * 100 : 0,
+        color: category.color,
+      };
+    })
+    .filter((category) => category.amount > 0)
+    .sort((a, b) => b.amount - a.amount);
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
+        {/* Header */}
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Statistics</Text>
           <Pressable style={styles.filterButton}>
@@ -42,23 +62,15 @@ export default function StatisticsScreen() {
           end={{ x: 1, y: 1 }}
         >
           <Text style={styles.totalLabel}>Total Spending</Text>
-          <Text style={styles.totalAmount}>$ {totalExpense}</Text>
-          <View style={styles.percentageChange}>
-            <MaterialCommunityIcons name="arrow-up" size={20} color="#4ADE80" />
-            <Text style={styles.changeText}>12.5% from last month</Text>
-          </View>
+          <Text style={styles.totalAmount}>${totalExpenses.toFixed(2)}</Text>
         </LinearGradient>
 
         {/* Category Breakdown */}
         <View style={styles.categoriesSection}>
           <Text style={styles.sectionTitle}>Spending by Category</Text>
 
-          {Object.entries(spendingByCategories).map(([id, amount]) => {
-            const category = categories.find((cat) => cat.id === id);
-            if (!category) return <View key={id}></View>;
-
-            const percentage = Math.round(category.budget / (amount * -1));
-            return (
+          {categorySpending.length > 0 ? (
+            categorySpending.map((category) => (
               <Pressable key={category.id} style={styles.categoryItem}>
                 <View style={styles.categoryHeader}>
                   <View style={styles.categoryLeft}>
@@ -70,23 +82,39 @@ export default function StatisticsScreen() {
                     />
                     <Text style={styles.categoryName}>{category.name}</Text>
                   </View>
-                  <Text style={styles.categoryAmount}>$ {amount * -1}</Text>
+                  <Text style={styles.categoryAmount}>
+                    ${category.amount.toFixed(2)}
+                  </Text>
                 </View>
                 <View style={styles.progressBarContainer}>
                   <View
                     style={[
                       styles.progressBar,
                       {
-                        width: `${percentage}%`,
+                        width: `${category.percentage}%`,
                         backgroundColor: category.color,
                       },
                     ]}
                   />
                 </View>
-                <Text style={styles.percentageText}>{}%</Text>
+                <Text style={styles.percentageText}>
+                  {category.percentage.toFixed(0)}%
+                </Text>
               </Pressable>
-            );
-          })}
+            ))
+          ) : (
+            <View style={styles.emptyState}>
+              <MaterialCommunityIcons
+                name="chart-pie"
+                size={48}
+                color="#94A3B8"
+              />
+              <Text style={styles.emptyStateText}>No expense data yet</Text>
+              <Text style={styles.emptyStateSubtext}>
+                Add some transactions to see statistics
+              </Text>
+            </View>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -140,6 +168,7 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: "600",
     marginTop: 8,
+    marginBottom: 24,
   },
   percentageChange: {
     flexDirection: "row",
@@ -201,5 +230,21 @@ const styles = StyleSheet.create({
   percentageText: {
     fontSize: 12,
     color: "#64748B",
+  },
+  emptyState: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 40,
+  },
+  emptyStateText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#64748B",
+    marginTop: 16,
+  },
+  emptyStateSubtext: {
+    fontSize: 14,
+    color: "#94A3B8",
+    marginTop: 8,
   },
 });

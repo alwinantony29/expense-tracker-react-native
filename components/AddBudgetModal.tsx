@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -12,63 +12,57 @@ import {
   Platform,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { useTransactions } from "@/context/TransactionContext";
+import { toast } from "sonner-native";
+import { useTransactions } from "../context/TransactionContext";
+import { Budget } from "../context/BudgetContext";
 
-interface AddTransactionModalProps {
+interface AddBudgetModalProps {
   visible: boolean;
   onClose: () => void;
+  onAddBudget: (budget: Budget) => void;
 }
 
-export default function AddTransactionModal({
+export default function AddBudgetModalAddBudgetModal({
   visible,
   onClose,
-}: AddTransactionModalProps) {
-  const { addTransaction, categories } = useTransactions();
-  const [title, setTitle] = useState("");
-  const [amount, setAmount] = useState("");
+  onAddBudget,
+}: AddBudgetModalProps) {
+  const { categories } = useTransactions();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
-  const [transactionType, setTransactionType] = useState<"expense" | "income">(
-    "expense"
+  const [limit, setLimit] = useState("");
+  const [period, setPeriod] = useState<"monthly" | "weekly">("monthly");
+
+  // Filter only expense categories
+  const expenseCategories = categories.filter(
+    (category) => category.type === "expense"
   );
 
   const resetForm = () => {
-    setTitle("");
-    setAmount("");
     setSelectedCategory(null);
-    setTransactionType("expense");
-    setDate(new Date().toISOString().split("T")[0]);
+    setLimit("");
+    setPeriod("monthly");
   };
 
-  const handleAddTransaction = () => {
-    console.log("adding");
-    if (!title.trim()) {
-      // toast.error("Please enter a title");
-      return;
-    }
-
-    if (!amount || isNaN(parseFloat(amount))) {
-      // toast.error("Please enter a valid amount");
-      return;
-    }
-
+  const handleAddBudget = () => {
     if (!selectedCategory) {
-      // toast.error("Please select a category");
+      toast.error("Please select a category");
       return;
     }
 
-    const newTransaction = {
+    if (!limit || isNaN(parseFloat(limit))) {
+      toast.error("Please enter a valid limit");
+      return;
+    }
+
+    const newBudget: Budget = {
       id: Date.now().toString(),
-      title: title.trim(),
-      amount:
-        transactionType === "expense"
-          ? -parseFloat(amount)
-          : parseFloat(amount),
       category: selectedCategory,
-      date: date,
+      limit: parseFloat(limit),
+      period: period,
     };
 
-    addTransaction(newTransaction);
+    onAddBudget(newBudget);
+    toast.success("Budget added successfully");
     resetForm();
     onClose();
   };
@@ -86,93 +80,72 @@ export default function AddTransactionModal({
       >
         <View style={styles.modalContent}>
           <View style={styles.header}>
-            <Text style={styles.headerTitle}>Add Transaction</Text>
+            <Text style={styles.headerTitle}>Add Budget</Text>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
               <MaterialCommunityIcons name="close" size={24} color="#64748B" />
             </TouchableOpacity>
           </View>
 
           <ScrollView style={styles.form}>
-            {/* Transaction Type Selector */}
-            <View style={styles.typeSelector}>
-              <Pressable
-                style={[
-                  styles.typeButton,
-                  transactionType === "expense" && styles.selectedTypeButton,
-                ]}
-                onPress={() => setTransactionType("expense")}
-              >
-                <MaterialCommunityIcons
-                  name="arrow-down"
-                  size={20}
-                  color={transactionType === "expense" ? "#FFFFFF" : "#64748B"}
-                />
-                <Text
+            {/* Period Selector */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Budget Period</Text>
+              <View style={styles.periodSelector}>
+                <Pressable
                   style={[
-                    styles.typeText,
-                    transactionType === "expense" && styles.selectedTypeText,
+                    styles.periodButton,
+                    period === "monthly" && styles.selectedPeriodButton,
                   ]}
+                  onPress={() => setPeriod("monthly")}
                 >
-                  Expense
-                </Text>
-              </Pressable>
-              <Pressable
-                style={[
-                  styles.typeButton,
-                  transactionType === "income" && styles.selectedTypeButton,
-                  transactionType === "income" && {
-                    backgroundColor: "#10B981",
-                  },
-                ]}
-                onPress={() => setTransactionType("income")}
-              >
-                <MaterialCommunityIcons
-                  name="arrow-up"
-                  size={20}
-                  color={transactionType === "income" ? "#FFFFFF" : "#64748B"}
-                />
-                <Text
+                  <Text
+                    style={[
+                      styles.periodText,
+                      period === "monthly" && styles.selectedPeriodText,
+                    ]}
+                  >
+                    Monthly
+                  </Text>
+                </Pressable>
+                <Pressable
                   style={[
-                    styles.typeText,
-                    transactionType === "income" && styles.selectedTypeText,
+                    styles.periodButton,
+                    period === "weekly" && styles.selectedPeriodButton,
                   ]}
+                  onPress={() => setPeriod("weekly")}
                 >
-                  Income
-                </Text>
-              </Pressable>
+                  <Text
+                    style={[
+                      styles.periodText,
+                      period === "weekly" && styles.selectedPeriodText,
+                    ]}
+                  >
+                    Weekly
+                  </Text>
+                </Pressable>
+              </View>
             </View>
 
-            {/* Amount Input */}
+            {/* Limit Input */}
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Amount</Text>
+              <Text style={styles.label}>Budget Limit</Text>
               <View style={styles.amountInputContainer}>
                 <Text style={styles.currencySymbol}>$</Text>
                 <TextInput
                   style={styles.amountInput}
                   placeholder="0.00"
                   keyboardType="numeric"
-                  value={amount}
-                  onChangeText={setAmount}
+                  value={limit}
+                  onChangeText={setLimit}
                 />
               </View>
-            </View>
-
-            {/* Title Input */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Title</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="What was this for?"
-                value={title}
-                onChangeText={setTitle}
-              />
             </View>
 
             {/* Category Selector */}
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Category</Text>
               <View style={styles.categoriesContainer}>
-                {categories.map((category) => (
+                {expenseCategories.map((category) => (
                   <Pressable
                     key={category.id}
                     style={[
@@ -209,25 +182,14 @@ export default function AddTransactionModal({
                 ))}
               </View>
             </View>
-
-            {/* Date Input */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Date</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="YYYY-MM-DD"
-                value={date}
-                onChangeText={setDate}
-              />
-            </View>
           </ScrollView>
 
           <View style={styles.footer}>
             <TouchableOpacity
               style={styles.addButton}
-              onPress={handleAddTransaction}
+              onPress={handleAddBudget}
             >
-              <Text style={styles.addButtonText}>Add Transaction</Text>
+              <Text style={styles.addButtonText}>Add Budget</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -248,7 +210,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 24,
     paddingTop: 20,
     paddingBottom: Platform.OS === "ios" ? 40 : 20,
-    height: "90%",
+    height: "80%",
   },
   header: {
     flexDirection: "row",
@@ -271,32 +233,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 20,
   },
-  typeSelector: {
-    flexDirection: "row",
-    marginBottom: 24,
-  },
-  typeButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    backgroundColor: "#F1F5F9",
-    marginRight: 12,
-  },
-  selectedTypeButton: {
-    backgroundColor: "#EF4444",
-  },
-  typeText: {
-    marginLeft: 8,
-    fontSize: 14,
-    fontWeight: "500",
-    color: "#64748B",
-  },
-  selectedTypeText: {
-    color: "#FFFFFF",
-  },
   inputGroup: {
     marginBottom: 20,
   },
@@ -306,14 +242,27 @@ const styles = StyleSheet.create({
     color: "#64748B",
     marginBottom: 8,
   },
-  input: {
-    backgroundColor: "#F8FAFC",
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-    borderRadius: 8,
-    paddingHorizontal: 16,
+  periodSelector: {
+    flexDirection: "row",
+    marginBottom: 16,
+  },
+  periodButton: {
+    flex: 1,
     paddingVertical: 12,
-    fontSize: 16,
+    alignItems: "center",
+    backgroundColor: "#F1F5F9",
+    marginRight: 8,
+    borderRadius: 8,
+  },
+  selectedPeriodButton: {
+    backgroundColor: "#3B82F6",
+  },
+  periodText: {
+    color: "#64748B",
+    fontWeight: "500",
+  },
+  selectedPeriodText: {
+    color: "#FFFFFF",
   },
   amountInputContainer: {
     flexDirection: "row",
