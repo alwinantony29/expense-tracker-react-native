@@ -4,10 +4,10 @@ import { appSchema, tableSchema } from "@nozbe/watermelondb";
 export const storage = new MMKV();
 
 export const STORAGE_KEYS = {
-  TAGS: "@tags",
   CATEGORIES: "@categories",
   TRANSACTIONS: "@transactions",
   SETTINGS: "@settings",
+  BUDGETS: "budgets",
 } as const;
 
 export default appSchema({
@@ -27,12 +27,3 @@ export default appSchema({
     }),
   ],
 });
-
-export const CURRENCIES = [
-  { label: "Indian Rupee (INR)", value: "INR", symbol: "₹" },
-  { label: "US Dollar (USD)", value: "USD", symbol: "$" },
-  { label: "Euro (EUR)", value: "EUR", symbol: "€" },
-  { label: "British Pound (GBP)", value: "GBP", symbol: "£" },
-];
-
-export type Currency = (typeof CURRENCIES)[number];

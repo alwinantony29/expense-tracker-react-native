@@ -1,3 +1,10 @@
+export const CURRENCIES = [
+  { label: "Indian Rupee (INR)", value: "INR", symbol: "₹" },
+  { label: "US Dollar (USD)", value: "USD", symbol: "$" },
+  { label: "Euro (EUR)", value: "EUR", symbol: "€" },
+  { label: "British Pound (GBP)", value: "GBP", symbol: "£" },
+];
+
 export const categories = [
   {
     id: "others",
