@@ -1,13 +1,7 @@
+import { Budget } from "@/types";
 import { storage, STORAGE_KEYS } from "../models/db";
 import { createContext, useContext, ReactNode } from "react";
 import { useMMKVObject } from "react-native-mmkv";
-
-export interface Budget {
-  id: string;
-  category: string;
-  limit: number;
-  period: "monthly" | "weekly";
-}
 
 interface BudgetContextType {
   budgets: Budget[];

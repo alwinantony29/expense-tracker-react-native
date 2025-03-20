@@ -1,18 +1,7 @@
+import { UserProfile, UserSettings } from "@/types";
 import { storage, STORAGE_KEYS } from "../models/db";
 import { createContext, useContext, ReactNode } from "react";
 import { useMMKVObject } from "react-native-mmkv";
-
-export interface UserProfile {
-  name?: string;
-  email?: string;
-  avatar?: string;
-}
-
-export interface UserSettings {
-  darkMode: boolean;
-  notifications: boolean;
-  currency: string;
-}
 
 interface UserContextType {
   profile: UserProfile;

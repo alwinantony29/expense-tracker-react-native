@@ -5,6 +5,7 @@ export type Category = {
   name: string;
   icon: string;
   color: string;
+  type: "income" | "expense";
 };
 
 export type Transaction = {
@@ -16,3 +17,22 @@ export type Transaction = {
 };
 
 export type Currency = (typeof CURRENCIES)[number];
+
+export type Budget = {
+  id: string;
+  category: string;
+  limit: number;
+  period: "monthly" | "weekly";
+};
+
+export interface UserProfile {
+  name?: string;
+  email?: string;
+  avatar?: string;
+}
+
+export interface UserSettings {
+  darkMode: boolean;
+  notifications: boolean;
+  currency: string;
+}

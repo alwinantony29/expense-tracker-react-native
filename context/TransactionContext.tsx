@@ -1,4 +1,4 @@
-import { Transaction } from "@/types";
+import { Category, Transaction } from "@/types";
 import { storage, STORAGE_KEYS } from "../models/db";
 import React, { createContext, useContext, ReactNode } from "react";
 import { useMMKVObject } from "react-native-mmkv";
@@ -15,14 +15,6 @@ interface TransactionContextType {
   addCategory: (category: Category) => void;
   deleteCategory: (id: string) => void;
   getCategorySpending: (categoryId: string) => number;
-}
-
-export interface Category {
-  id: string;
-  name: string;
-  icon: string;
-  color: string;
-  type: "income" | "expense";
 }
 
 const TransactionContext = createContext<TransactionContextType | undefined>(
