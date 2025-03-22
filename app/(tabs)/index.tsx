@@ -34,7 +34,7 @@ export default function HomeScreen() {
           <View style={styles.balanceStats}>
             <View style={styles.statItem}>
               <MaterialCommunityIcons
-                name="arrow-up-circle"
+                name="arrow-down-circle"
                 size={24}
                 color="#4ADE80"
               />
@@ -46,7 +46,7 @@ export default function HomeScreen() {
             <View style={styles.statDivider} />
             <View style={styles.statItem}>
               <MaterialCommunityIcons
-                name="arrow-down-circle"
+                name="arrow-up-circle"
                 size={24}
                 color="#FB7185"
               />

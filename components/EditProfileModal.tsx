@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   View,
   Text,
@@ -11,23 +11,20 @@ import {
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { toast } from "sonner-native";
-import { UserProfile } from "@/types";
+import { useUser } from "@/context/UserContext";
 
 interface EditProfileModalProps {
   visible: boolean;
   onClose: () => void;
-  currentProfile: UserProfile;
-  onUpdateProfile: (profile: Partial<UserProfile>) => void;
 }
 
 export default function EditProfileModal({
   visible,
   onClose,
-  currentProfile,
-  onUpdateProfile,
 }: EditProfileModalProps) {
-  const [name, setName] = useState(currentProfile.name || "");
-  const [email, setEmail] = useState(currentProfile.email || "");
+  const { profile, updateProfile } = useUser();
+  const [name, setName] = useState(profile.name || "");
+  const [email, setEmail] = useState(profile.email || "");
 
   const handleUpdateProfile = () => {
     if (!name.trim()) {
@@ -47,7 +44,7 @@ export default function EditProfileModal({
       return;
     }
 
-    onUpdateProfile({
+    updateProfile({
       name: name.trim(),
       email: email.trim(),
     });

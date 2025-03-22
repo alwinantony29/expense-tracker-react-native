@@ -9,50 +9,50 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { useUser } from "../../context/UserContext";
-import EditProfileModal from "../../components/EditProfileModal";
+import { useUser } from "../context/UserContext";
+import EditProfileModal from "../components/EditProfileModal";
 import { toast } from "sonner-native";
 
-const menuItems = [
-  // {
-  //   id: "1",
-  //   title: "Account Settings",
-  //   icon: "account-cog",
-  //   color: "#3B82F6",
-  //   action: "account",
-  // },
-  // {
-  //   id: "2",
-  //   title: "Notifications",
-  //   icon: "bell",
-  //   color: "#10B981",
-  //   action: "notifications",
-  // },
-  // {
-  //   id: "3",
-  //   title: "Payment Methods",
-  //   icon: "credit-card",
-  //   color: "#F59E0B",
-  //   action: "payment",
-  // },
-  // {
-  //   id: "4",
-  //   title: "Security",
-  //   icon: "shield-check",
-  //   color: "#8B5CF6",
-  //   action: "security",
-  // },
-  // {
-  //   id: "5",
-  //   title: "Help & Support",
-  //   icon: "help-circle",
-  //   color: "#EC4899",
-  //   action: "help",
-  // },
-];
+// const menuItems = [
+// {
+//   id: "1",
+//   title: "Account Settings",
+//   icon: "account-cog",
+//   color: "#3B82F6",
+//   action: "account",
+// },
+// {
+//   id: "2",
+//   title: "Notifications",
+//   icon: "bell",
+//   color: "#10B981",
+//   action: "notifications",
+// },
+// {
+//   id: "3",
+//   title: "Payment Methods",
+//   icon: "credit-card",
+//   color: "#F59E0B",
+//   action: "payment",
+// },
+// {
+//   id: "4",
+//   title: "Security",
+//   icon: "shield-check",
+//   color: "#8B5CF6",
+//   action: "security",
+// },
+// {
+//   id: "5",
+//   title: "Help & Support",
+//   icon: "help-circle",
+//   color: "#EC4899",
+//   action: "help",
+// },
+// ];
 
 export default function ProfileScreen() {
-  const { profile, settings, updateProfile, updateSettings } = useUser();
+  const { profile, settings, updateSettings } = useUser();
   const [editProfileVisible, setEditProfileVisible] = useState(false);
 
   const handleMenuItemPress = (action: string) => {
@@ -78,14 +78,6 @@ export default function ProfileScreen() {
       default:
         break;
     }
-  };
-
-  const handleUpdateProfile = (updatedProfile: any) => {
-    updateProfile(updatedProfile);
-  };
-
-  const handleToggleDarkMode = () => {
-    updateSettings({ darkMode: !settings.darkMode });
   };
 
   const handleToggleNotifications = () => {
@@ -120,7 +112,7 @@ export default function ProfileScreen() {
 
         {/* Menu Items */}
         <View style={styles.menuSection}>
-          {menuItems.map((item) => (
+          {[].map((item: any) => (
             <Pressable
               key={item.id}
               style={styles.menuItem}
@@ -153,7 +145,7 @@ export default function ProfileScreen() {
         {/* Preferences */}
         <View style={styles.preferencesSection}>
           <Text style={styles.sectionTitle}>Preferences</Text>
-          <View style={styles.preferenceItem}>
+          {/* <View style={styles.preferenceItem}>
             <Text style={styles.preferenceTitle}>Dark Mode</Text>
             <Switch
               value={settings.darkMode}
@@ -161,7 +153,7 @@ export default function ProfileScreen() {
               thumbColor={settings.darkMode ? "#3B82F6" : "#FFFFFF"}
               onValueChange={handleToggleDarkMode}
             />
-          </View>
+          </View> */}
           <View style={styles.preferenceItem}>
             <Text style={styles.preferenceTitle}>Push Notifications</Text>
             <Switch
@@ -172,22 +164,11 @@ export default function ProfileScreen() {
             />
           </View>
         </View>
-
-        {/* Logout Button */}
-        <Pressable
-          style={styles.logoutButton}
-          onPress={() => toast.info("Logout feature coming soon")}
-        >
-          <MaterialCommunityIcons name="logout" size={20} color="#EF4444" />
-          <Text style={styles.logoutText}>Logout</Text>
-        </Pressable>
       </ScrollView>
 
       <EditProfileModal
         visible={editProfileVisible}
         onClose={() => setEditProfileVisible(false)}
-        currentProfile={profile}
-        onUpdateProfile={handleUpdateProfile}
       />
     </SafeAreaView>
   );

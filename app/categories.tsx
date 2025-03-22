@@ -61,10 +61,10 @@ const Categories = () => {
 
       {/* Categories Grid */}
       <ScrollView className="flex-1">
-        <View className="flex-row flex-wrap">
+        <View className="flex-row flex-wrap px-10 gap-10">
           {(activeTab === "expense" ? expenseCategories : incomeCategories).map(
             (category) => (
-              <View key={category.id} className=" w-[33%] items-center">
+              <View key={category.id} className="w-[20%] items-center">
                 <View
                   style={[
                     styles.categoryIcon,
@@ -96,6 +96,7 @@ const Categories = () => {
       </ScrollView>
 
       <AddCategoryModal
+        type={activeTab}
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
       />
