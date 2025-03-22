@@ -1,47 +1,45 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-
-const budgets = [
-  {
-    id: "1",
-    category: "Shopping",
-    spent: 854.5,
-    limit: 1000,
-    color: "#3B82F6",
-  },
-  {
-    id: "2",
-    category: "Food & Dining",
-    spent: 425.8,
-    limit: 500,
-    color: "#10B981",
-  },
-  {
-    id: "3",
-    category: "Transportation",
-    spent: 325.2,
-    limit: 300,
-    color: "#F59E0B",
-  },
-  {
-    id: "4",
-    category: "Entertainment",
-    spent: 154.3,
-    limit: 200,
-    color: "#8B5CF6",
-  },
-];
+import { useBudgets } from "@/context/BudgetContext";
+import { useTransactions } from "@/context/TransactionContext";
+import AddBudgetModal from "@/components/AddBudgetModal";
+import { toast } from "sonner-native";
+import { Budget } from "@/types";
 
 export default function BudgetScreen() {
+  const [modalVisible, setModalVisible] = useState(false);
+  const { budgets, addBudget, deleteBudget, getTotalBudget } = useBudgets();
+  const { categories, getCategorySpending } = useTransactions();
+
+  const handleAddBudget = (budget: Budget) => {
+    addBudget(budget);
+  };
+
+  const handleDeleteBudget = (id: string) => {
+    deleteBudget(id);
+    toast.success("Budget deleted successfully");
+  };
+
+  // Calculate total spent
+  const totalSpent = budgets.reduce((total, budget) => {
+    return total + getCategorySpending(budget.category);
+  }, 0);
+
+  // Calculate remaining budget
+  const remainingBudget = getTotalBudget() - totalSpent;
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Budget</Text>
-          <Pressable style={styles.addButton}>
+          <Pressable
+            style={styles.addButton}
+            onPress={() => setModalVisible(true)}
+          >
             <MaterialCommunityIcons name="plus" size={24} color="#FFFFFF" />
           </Pressable>
         </View>
@@ -52,15 +50,19 @@ export default function BudgetScreen() {
           <View style={styles.overviewStats}>
             <View style={styles.statItem}>
               <Text style={styles.statLabel}>Total Budget</Text>
-              <Text style={styles.statAmount}>$2,000</Text>
+              <Text style={styles.statAmount}>
+                ${getTotalBudget().toFixed(2)}
+              </Text>
             </View>
             <View style={styles.statItem}>
               <Text style={styles.statLabel}>Spent</Text>
-              <Text style={styles.statAmount}>$1,759.80</Text>
+              <Text style={styles.statAmount}>${totalSpent.toFixed(2)}</Text>
             </View>
             <View style={styles.statItem}>
               <Text style={styles.statLabel}>Remaining</Text>
-              <Text style={styles.statAmount}>$240.20</Text>
+              <Text style={styles.statAmount}>
+                ${remainingBudget.toFixed(2)}
+              </Text>
             </View>
           </View>
         </View>
@@ -68,29 +70,39 @@ export default function BudgetScreen() {
         {/* Budget Categories */}
         <View style={styles.categoriesSection}>
           {budgets.map((budget) => {
-            const percentage = (budget.spent / budget.limit) * 100;
-            const isOverBudget = budget.spent > budget.limit;
+            const category = categories.find(
+              (cat) => cat.id === budget.category
+            );
+            if (!category) return null;
+
+            const spent = getCategorySpending(budget.category);
+            const percentage = (spent / budget.limit) * 100;
+            const isOverBudget = spent > budget.limit;
 
             return (
-              <Pressable key={budget.id} style={styles.budgetItem}>
+              <Pressable
+                key={budget.id}
+                style={styles.budgetItem}
+                onLongPress={() => handleDeleteBudget(budget.id)}
+              >
                 <View style={styles.budgetHeader}>
                   <View style={styles.categoryLeft}>
                     <View
                       style={[
                         styles.categoryIcon,
-                        { backgroundColor: budget.color },
+                        { backgroundColor: category.color },
                       ]}
                     >
                       <MaterialCommunityIcons
-                        name="shopping"
+                        name={category.icon as any}
                         size={20}
                         color="#FFFFFF"
                       />
                     </View>
                     <View>
-                      <Text style={styles.categoryName}>{budget.category}</Text>
+                      <Text style={styles.categoryName}>{category.name}</Text>
                       <Text style={styles.budgetLimit}>
-                        ${budget.spent.toFixed(2)} of ${budget.limit}
+                        ${spent.toFixed(2)} of ${budget.limit}
                       </Text>
                     </View>
                   </View>
@@ -111,7 +123,7 @@ export default function BudgetScreen() {
                         width: `${Math.min(percentage, 100)}%`,
                         backgroundColor: isOverBudget
                           ? "#EF4444"
-                          : budget.color,
+                          : category.color,
                       },
                     ]}
                   />
@@ -119,8 +131,28 @@ export default function BudgetScreen() {
               </Pressable>
             );
           })}
+
+          {budgets.length === 0 && (
+            <View style={styles.emptyState}>
+              <MaterialCommunityIcons
+                name="wallet-outline"
+                size={48}
+                color="#94A3B8"
+              />
+              <Text style={styles.emptyStateText}>No budgets yet</Text>
+              <Text style={styles.emptyStateSubtext}>
+                Tap the + button to add a budget
+              </Text>
+            </View>
+          )}
         </View>
       </ScrollView>
+
+      <AddBudgetModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onAddBudget={handleAddBudget}
+      />
     </SafeAreaView>
   );
 }
@@ -192,6 +224,7 @@ const styles = StyleSheet.create({
   },
   categoriesSection: {
     paddingHorizontal: 20,
+    paddingBottom: 20,
   },
   budgetItem: {
     backgroundColor: "#FFFFFF",
@@ -247,5 +280,21 @@ const styles = StyleSheet.create({
   progressBar: {
     height: "100%",
     borderRadius: 3,
+  },
+  emptyState: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 40,
+  },
+  emptyStateText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#64748B",
+    marginTop: 16,
+  },
+  emptyStateSubtext: {
+    fontSize: 14,
+    color: "#94A3B8",
+    marginTop: 8,
   },
 });
