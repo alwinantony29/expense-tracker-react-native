@@ -11,6 +11,13 @@ export const STORAGE_KEYS = {
   USER: "@user",
 } as const;
 
+// Function to wipe the database
+export const wipeDatabase = () => {
+  Object.values(STORAGE_KEYS).forEach((key) => {
+    storage.delete(key);
+  });
+};
+
 export default appSchema({
   version: 1,
   tables: [
