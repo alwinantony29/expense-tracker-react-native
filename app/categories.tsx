@@ -60,11 +60,11 @@ const Categories = () => {
       </View>
 
       {/* Categories Grid */}
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.categoriesGrid}>
+      <ScrollView className="flex-1">
+        <View className="flex-row flex-wrap">
           {(activeTab === "expense" ? expenseCategories : incomeCategories).map(
             (category) => (
-              <View key={category.id} style={styles.categoryCard}>
+              <View key={category.id} className=" w-[33%] items-center">
                 <View
                   style={[
                     styles.categoryIcon,
@@ -81,19 +81,17 @@ const Categories = () => {
               </View>
             )
           )}
-
-          <Pressable
-            style={styles.categoryIcon}
-            onPress={() => setModalVisible(true)}
-            className="bg-yellow-400 "
-          >
-            <MaterialCommunityIcons
-              // style={styles.categoryIcon}
-              name="plus"
-              size={24}
-              color="black"
-            />
-          </Pressable>
+          <View className="items-center w-[10%]">
+            <Pressable onPress={() => setModalVisible(true)}>
+              <View
+                style={{ borderRadius: 24 }}
+                className="w-[48px] h-[48px] items-center mb-[8px] justify-center bg-yellow-400"
+              >
+                <MaterialCommunityIcons name="plus" size={34} color="white" />
+              </View>
+              <Text style={styles.categoryName}>Create</Text>
+            </Pressable>
+          </View>
         </View>
       </ScrollView>
 
@@ -157,18 +155,10 @@ const styles = StyleSheet.create({
   activeTabText: {
     color: "#FFFFFF",
   },
-  scrollView: {
-    flex: 1,
-  },
   categoriesGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
     padding: 16,
-  },
-  categoryCard: {
-    width: "33%",
-    alignItems: "center",
-    padding: 12,
   },
   categoryIcon: {
     width: 48,
