@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import AddTransactionModal from "../../components/AddTransactionModal";
 import { useTransactions } from "../../context/TransactionContext";
-import { useUser } from "../../context/UserContext";
+import { router } from "expo-router";
 
 export default function HomeScreen() {
   const [transactionModalVisible, setTransactionModalVisible] = useState(false);
@@ -16,26 +16,10 @@ export default function HomeScreen() {
     getTotalIncome,
     getTotalExpenses,
   } = useTransactions();
-  const { profile } = useUser();
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
-        {/* Header */}
-        <View style={styles.header}>
-          <View>
-            <Text style={styles.greeting}>Good morning,</Text>
-            <Text style={styles.userName}>{profile.name?.split(" ")[0]}</Text>
-          </View>
-          <Pressable style={styles.profileButton}>
-            <MaterialCommunityIcons
-              name="account-circle"
-              size={32}
-              color="#333"
-            />
-          </Pressable>
-        </View>
-
         {/* Balance Card */}
         <LinearGradient
           colors={["#3B82F6", "#1D4ED8"]}
@@ -95,7 +79,10 @@ export default function HomeScreen() {
             </View>
             <Text style={styles.actionText}>Transfer</Text>
           </Pressable>
-          <Pressable style={styles.actionButton}>
+          <Pressable
+            style={styles.actionButton}
+            onPress={() => router.navigate("/categories")}
+          >
             <View style={[styles.actionIcon, { backgroundColor: "#FEF3C7" }]}>
               <MaterialCommunityIcons name="tag" size={24} color="#D97706" />
             </View>
@@ -160,14 +147,13 @@ export default function HomeScreen() {
                   ]}
                 >
                   {transaction.amount > 0 ? "+" : ""}
-                  {transaction.amount.toFixed(2)}
+                  {transaction.amount?.toFixed(2)}
                 </Text>
               </Pressable>
             );
           })}
         </View>
       </ScrollView>
-
       <AddTransactionModal
         visible={transactionModalVisible}
         onClose={() => setTransactionModalVisible(false)}
@@ -314,8 +300,8 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   categoryIcon: {
-    width: 48,
-    height: 48,
+    width: 38,
+    height: 38,
     borderRadius: 24,
     justifyContent: "center",
     alignItems: "center",
@@ -340,6 +326,7 @@ const styles = StyleSheet.create({
   transactionLeft: {
     flexDirection: "row",
     alignItems: "center",
+    gap: 10,
   },
   transactionTitle: {
     fontSize: 14,
