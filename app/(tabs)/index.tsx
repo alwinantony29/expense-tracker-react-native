@@ -96,7 +96,7 @@ export default function HomeScreen() {
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>Recent Transactions</Text>
               <Pressable>
-                <Text style={styles.seeAll}>See all</Text>
+                {/* <Text style={styles.seeAll}>See all</Text> */}
               </Pressable>
             </View>
           )}
