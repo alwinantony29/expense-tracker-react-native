@@ -14,41 +14,41 @@ import EditProfileModal from "../../components/EditProfileModal";
 import { toast } from "sonner-native";
 
 const menuItems = [
-  {
-    id: "1",
-    title: "Account Settings",
-    icon: "account-cog",
-    color: "#3B82F6",
-    action: "account",
-  },
-  {
-    id: "2",
-    title: "Notifications",
-    icon: "bell",
-    color: "#10B981",
-    action: "notifications",
-  },
-  {
-    id: "3",
-    title: "Payment Methods",
-    icon: "credit-card",
-    color: "#F59E0B",
-    action: "payment",
-  },
-  {
-    id: "4",
-    title: "Security",
-    icon: "shield-check",
-    color: "#8B5CF6",
-    action: "security",
-  },
-  {
-    id: "5",
-    title: "Help & Support",
-    icon: "help-circle",
-    color: "#EC4899",
-    action: "help",
-  },
+  // {
+  //   id: "1",
+  //   title: "Account Settings",
+  //   icon: "account-cog",
+  //   color: "#3B82F6",
+  //   action: "account",
+  // },
+  // {
+  //   id: "2",
+  //   title: "Notifications",
+  //   icon: "bell",
+  //   color: "#10B981",
+  //   action: "notifications",
+  // },
+  // {
+  //   id: "3",
+  //   title: "Payment Methods",
+  //   icon: "credit-card",
+  //   color: "#F59E0B",
+  //   action: "payment",
+  // },
+  // {
+  //   id: "4",
+  //   title: "Security",
+  //   icon: "shield-check",
+  //   color: "#8B5CF6",
+  //   action: "security",
+  // },
+  // {
+  //   id: "5",
+  //   title: "Help & Support",
+  //   icon: "help-circle",
+  //   color: "#EC4899",
+  //   action: "help",
+  // },
 ];
 
 export default function ProfileScreen() {
@@ -95,17 +95,6 @@ export default function ProfileScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Profile</Text>
-          <Pressable
-            style={styles.settingsButton}
-            onPress={() => toast.info("Settings feature coming soon")}
-          >
-            <MaterialCommunityIcons name="cog" size={24} color="#64748B" />
-          </Pressable>
-        </View>
-
         {/* Profile Card */}
         <View style={styles.profileCard}>
           <View style={styles.profileHeader}>

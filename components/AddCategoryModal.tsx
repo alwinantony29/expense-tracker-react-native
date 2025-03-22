@@ -12,13 +12,12 @@ import {
   Platform,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { toast } from "sonner-native";
-import { Category } from "../context/TransactionContext";
+import { Category } from "@/types";
+import { useTransactions } from "@/context/TransactionContext";
 
 interface AddCategoryModalProps {
   visible: boolean;
   onClose: () => void;
-  onAddCategory: (category: Category) => void;
 }
 
 const iconOptions = [
@@ -47,14 +46,12 @@ const colorOptions = [
   "#6366F1", // Indigo
   "#14B8A6", // Teal
   "#F97316", // Orange
-  "#8B5CF6", // Violet
   "#06B6D4", // Cyan
 ];
 
 export default function AddCategoryModal({
   visible,
   onClose,
-  onAddCategory,
 }: AddCategoryModalProps) {
   const [name, setName] = useState("");
   const [selectedIcon, setSelectedIcon] = useState<string | null>(null);
@@ -62,6 +59,7 @@ export default function AddCategoryModal({
   const [categoryType, setCategoryType] = useState<"income" | "expense">(
     "expense"
   );
+  const { addCategory } = useTransactions();
 
   const resetForm = () => {
     setName("");
@@ -72,17 +70,17 @@ export default function AddCategoryModal({
 
   const handleAddCategory = () => {
     if (!name.trim()) {
-      toast.error("Please enter a category name");
+      // toast.error("Please enter a category name");
       return;
     }
 
     if (!selectedIcon) {
-      toast.error("Please select an icon");
+      // toast.error("Please select an icon");
       return;
     }
 
     if (!selectedColor) {
-      toast.error("Please select a color");
+      // toast.error("Please select a color");
       return;
     }
 
@@ -94,8 +92,8 @@ export default function AddCategoryModal({
       type: categoryType,
     };
 
-    onAddCategory(newCategory);
-    toast.success("Category added successfully");
+    addCategory(newCategory);
+    // toast.success("Category added successfully");
     resetForm();
     onClose();
   };
@@ -330,8 +328,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#3B82F6",
   },
   colorItem: {
-    width: 48,
-    height: 48,
+    width: 28,
+    height: 28,
     borderRadius: 24,
     margin: 8,
   },
