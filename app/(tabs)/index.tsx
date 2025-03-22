@@ -91,67 +91,83 @@ export default function HomeScreen() {
         </View>
 
         {/* Recent Transactions */}
-        <View style={styles.transactionsSection}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Recent Transactions</Text>
-            <Pressable>
-              <Text style={styles.seeAll}>See all</Text>
-            </Pressable>
-          </View>
+        <View style={styles.transactionsSection} className="">
+          {transactions.length > 0 && (
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>Recent Transactions</Text>
+              <Pressable>
+                <Text style={styles.seeAll}>See all</Text>
+              </Pressable>
+            </View>
+          )}
 
-          {transactions.slice(0, 5).map((transaction) => {
-            const category = categories.find(
-              (cat) => cat.id === transaction.category
-            );
+          {transactions.length === 0 ? (
+            <View className="justify-center items-center pt-20">
+              <MaterialCommunityIcons
+                name="receipt"
+                size={48}
+                color="#94A3B8"
+              />
+              <Text style={styles.emptyStateText}>No transactions yet</Text>
+              <Text style={styles.emptyStateSubtext}>
+                Add your first transaction to get started
+              </Text>
+            </View>
+          ) : (
+            transactions.slice(0, 5).map((transaction) => {
+              const category = categories.find(
+                (cat) => cat.id === transaction.category
+              );
 
-            return (
-              <Pressable key={transaction.id} style={styles.transaction}>
-                <View style={styles.transactionLeft}>
-                  <View
+              return (
+                <Pressable key={transaction.id} style={styles.transaction}>
+                  <View style={styles.transactionLeft}>
+                    <View
+                      style={[
+                        styles.categoryIcon,
+                        {
+                          backgroundColor: category
+                            ? category.color
+                            : transaction.amount > 0
+                            ? "#10B981"
+                            : "#EF4444",
+                        },
+                      ]}
+                    >
+                      <MaterialCommunityIcons
+                        name={
+                          category
+                            ? category.icon
+                            : transaction.amount > 0
+                            ? "bank-transfer-in"
+                            : ("cart" as any)
+                        }
+                        size={20}
+                        color="#FFFFFF"
+                      />
+                    </View>
+                    <View>
+                      <Text style={styles.transactionTitle}>
+                        {transaction.title}
+                      </Text>
+                      <Text style={styles.transactionDate}>
+                        {transaction.date}
+                      </Text>
+                    </View>
+                  </View>
+                  <Text
                     style={[
-                      styles.categoryIcon,
-                      {
-                        backgroundColor: category
-                          ? category.color
-                          : transaction.amount > 0
-                          ? "#10B981"
-                          : "#EF4444",
-                      },
+                      styles.transactionAmount,
+                      { color: transaction.amount > 0 ? "#16A34A" : "#DC2626" },
                     ]}
                   >
-                    <MaterialCommunityIcons
-                      name={
-                        category
-                          ? category.icon
-                          : transaction.amount > 0
-                          ? "bank-transfer-in"
-                          : ("cart" as any)
-                      }
-                      size={20}
-                      color="#FFFFFF"
-                    />
-                  </View>
-                  <View>
-                    <Text style={styles.transactionTitle}>
-                      {transaction.title}
-                    </Text>
-                    <Text style={styles.transactionDate}>
-                      {transaction.date}
-                    </Text>
-                  </View>
-                </View>
-                <Text
-                  style={[
-                    styles.transactionAmount,
-                    { color: transaction.amount > 0 ? "#16A34A" : "#DC2626" },
-                  ]}
-                >
-                  {transaction.amount > 0 ? "+" : ""}
-                  {transaction.amount?.toFixed(2)}
-                </Text>
-              </Pressable>
-            );
-          })}
+                    {transaction.amount > 0 ? "+" : ""}
+                    {transaction.amount?.toFixed(2)}
+                  </Text>
+                </Pressable>
+              );
+            })
+          )}
         </View>
       </ScrollView>
       <AddTransactionModal
@@ -341,5 +357,17 @@ const styles = StyleSheet.create({
   transactionAmount: {
     fontSize: 14,
     fontWeight: "600",
+  },
+  emptyStateText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#0F172A",
+    marginTop: 16,
+  },
+  emptyStateSubtext: {
+    fontSize: 14,
+    color: "#64748B",
+    marginTop: 8,
+    textAlign: "center",
   },
 });

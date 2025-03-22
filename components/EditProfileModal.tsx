@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { toast } from "sonner-native";
-import { UserProfile } from "../context/UserContext";
+import { UserProfile } from "@/types";
 
 interface EditProfileModalProps {
   visible: boolean;

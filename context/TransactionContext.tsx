@@ -28,7 +28,7 @@ export const TransactionProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const [categories = [], setCategories] = useMMKVObject<Category[]>(
-    STORAGE_KEYS.TRANSACTIONS,
+    STORAGE_KEYS.CATEGORIES,
     storage
   );
   console.log("🚀 ~ transactions.length:", transactions.length);
