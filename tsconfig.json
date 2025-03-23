@@ -15,10 +15,12 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "strict": true,
+    "baseUrl": ".",
     "paths": {
       "@/*": [
         "./*"
-      ]
+      ], 
+      "~/*": ["*"]
     }
   },
   "include": [
