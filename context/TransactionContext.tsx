@@ -7,6 +7,10 @@ interface TransactionContextType {
   transactions: Transaction[];
   addTransaction: (transaction: Transaction) => void;
   getTransaction: (id: string | string[]) => Transaction | undefined;
+  updateTransaction: (
+    id: string,
+    updatedTransaction: Partial<Transaction>
+  ) => void;
   deleteTransaction: (id: string) => void;
   getTotalBalance: () => number;
   getTotalIncome: () => number;
@@ -49,6 +53,18 @@ export const TransactionProvider = ({ children }: { children: ReactNode }) => {
 
   const getTransaction = (id: string | string[]) => {
     return transactions.find((t) => t.id === id);
+  };
+  const updateTransaction = (
+    id: string,
+    updatedTransaction: Partial<Transaction>
+  ) => {
+    setTransactions(
+      transactions.map((transaction) =>
+        transaction.id === id
+          ? { ...transaction, ...updatedTransaction }
+          : transaction
+      )
+    );
   };
 
   const getTotalBalance = () => {
@@ -94,17 +110,18 @@ export const TransactionProvider = ({ children }: { children: ReactNode }) => {
   return (
     <TransactionContext.Provider
       value={{
-        categories,
-        addCategory,
-        deleteCategory,
         transactions,
         addTransaction,
+        getTransaction,
+        updateTransaction,
         deleteTransaction,
         getTotalBalance,
         getTotalIncome,
+        categories,
+        addCategory,
+        deleteCategory,
         getTotalExpenses,
         getCategorySpending,
-        getTransaction,
       }}
     >
       {children}
