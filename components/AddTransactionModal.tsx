@@ -41,12 +41,6 @@ export default function AddTransactionModal({
   };
 
   const handleAddTransaction = () => {
-    console.log("adding");
-    if (!title.trim()) {
-      // toast.error("Please enter a title");
-      return;
-    }
-
     if (!amount || isNaN(parseFloat(amount))) {
       // toast.error("Please enter a valid amount");
       return;

@@ -6,47 +6,11 @@ import { useTransactions } from "../../context/TransactionContext";
 import { useRouter } from "expo-router";
 
 type FilterType = "all" | "income" | "expense";
-type DateRange = "all" | "week" | "month" | "year";
 
 export default function TransactionsScreen() {
   const router = useRouter();
   const { transactions, categories } = useTransactions();
   const [filterType, setFilterType] = useState<FilterType>("all");
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [dateRange, setDateRange] = useState<DateRange>("all");
-
-  // Filter transactions based on selected filters
-  const filteredTransactions = transactions.filter((transaction) => {
-    // Filter by type (income/expense)
-    if (filterType === "income" && transaction.amount <= 0) return false;
-    if (filterType === "expense" && transaction.amount > 0) return false;
-
-    // Filter by category
-    if (selectedCategory && transaction.category !== selectedCategory)
-      return false;
-
-    // Filter by date range
-    if (dateRange !== "all") {
-      const txDate = new Date(transaction.date);
-      const now = new Date();
-      switch (dateRange) {
-        case "week":
-          const weekAgo = new Date(now.setDate(now.getDate() - 7));
-          if (txDate < weekAgo) return false;
-          break;
-        case "month":
-          const monthAgo = new Date(now.setMonth(now.getMonth() - 1));
-          if (txDate < monthAgo) return false;
-          break;
-        case "year":
-          const yearAgo = new Date(now.setFullYear(now.getFullYear() - 1));
-          if (txDate < yearAgo) return false;
-          break;
-      }
-    }
-
-    return true;
-  });
 
   return (
     <SafeAreaView style={styles.container}>
@@ -83,61 +47,9 @@ export default function TransactionsScreen() {
         </ScrollView>
       </View>
 
-      {/* Date Range Filter */}
-      <View style={styles.filterSection}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {["all", "week", "month", "year"].map((range) => (
-            <Pressable
-              key={range}
-              style={[
-                styles.filterButton,
-                dateRange === range && styles.filterButtonActive,
-              ]}
-              onPress={() => setDateRange(range as DateRange)}
-            >
-              <Text style={styles.filterText}>
-                {range.charAt(0).toUpperCase() + range.slice(1)}
-              </Text>
-            </Pressable>
-          ))}
-        </ScrollView>
-      </View>
-
-      {/* Categories Filter */}
-      <View style={styles.filterSection}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <Pressable
-            style={[
-              styles.categoryButton,
-              !selectedCategory && styles.categoryButtonActive,
-            ]}
-            onPress={() => setSelectedCategory(null)}
-          >
-            <Text style={styles.filterText}>All Categories</Text>
-          </Pressable>
-          {categories.map((category) => (
-            <Pressable
-              key={category.id}
-              style={[
-                styles.categoryButton,
-                selectedCategory === category.id && styles.categoryButtonActive,
-              ]}
-              onPress={() => setSelectedCategory(category.id)}
-            >
-              <MaterialCommunityIcons
-                name={category.icon as any}
-                size={16}
-                color={category.color}
-              />
-              <Text style={styles.filterText}>{category.name}</Text>
-            </Pressable>
-          ))}
-        </ScrollView>
-      </View>
-
       {/* Transactions List */}
       <ScrollView style={styles.transactionsList}>
-        {filteredTransactions.length === 0 ? (
+        {transactions.length === 0 ? (
           <View style={styles.emptyState}>
             <MaterialCommunityIcons name="receipt" size={48} color="#94A3B8" />
             <Text style={styles.emptyStateText}>No transactions found</Text>
@@ -146,7 +58,7 @@ export default function TransactionsScreen() {
             </Text>
           </View>
         ) : (
-          filteredTransactions.map((transaction) => {
+          transactions.map((transaction) => {
             const category = categories.find(
               (cat) => cat.id === transaction.category
             );

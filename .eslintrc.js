@@ -7,7 +7,7 @@ module.exports = {
   },
   settings: {
     "import/resolver": {
-      "typescript": {}, // Ensure TypeScript paths resolve
+      "typescript": { alwaysTryTypes: true, }, // Ensure TypeScript paths resolve
       "node": {
         "paths": ["src"], // Match your tsconfig.json
         "extensions": [".js", ".jsx", ".ts", ".tsx"]
