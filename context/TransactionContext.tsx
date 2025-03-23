@@ -6,7 +6,7 @@ import { useMMKVObject } from "react-native-mmkv";
 interface TransactionContextType {
   transactions: Transaction[];
   addTransaction: (transaction: Transaction) => void;
-  getTransaction: (id: string) => Transaction | undefined;
+  getTransaction: (id: string | string[]) => Transaction | undefined;
   deleteTransaction: (id: string) => void;
   getTotalBalance: () => number;
   getTotalIncome: () => number;
@@ -47,7 +47,7 @@ export const TransactionProvider = ({ children }: { children: ReactNode }) => {
     );
   };
 
-  const getTransaction = (id: string) => {
+  const getTransaction = (id: string | string[]) => {
     return transactions.find((t) => t.id === id);
   };
 

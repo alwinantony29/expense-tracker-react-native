@@ -12,11 +12,11 @@ import React from "react";
 export default function TransactionDetails() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
-  const { transactions, categories, deleteTransaction } = useTransactions();
+  const { categories, deleteTransaction, getTransaction } = useTransactions();
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  const transaction = transactions.find((t) => t.id === id);
+  const transaction = getTransaction(id);
   const category = categories.find((c) => c.id === transaction?.category);
 
   const [editForm, setEditForm] = useState({
@@ -88,12 +88,12 @@ export default function TransactionDetails() {
 
           {!isEditing ? (
             <>
-              <View className="space-y-4">
+              <View className="flex flex-col gap-5">
                 <View>
                   <Text className="text-sm font-medium text-slate-500">
                     Title
                   </Text>
-                  <Text className="text-lg text-slate-900">
+                  <Text className="text-2xl text-slate-900">
                     {transaction.title}
                   </Text>
                 </View>
@@ -101,27 +101,37 @@ export default function TransactionDetails() {
                   <Text className="text-sm font-medium text-slate-500">
                     Date
                   </Text>
-                  <Text className="text-lg text-slate-900">
+                  <Text className="text-2xl text-slate-900">
                     {transaction.date}
                   </Text>
                 </View>
               </View>
-              <View className="flex-row items-center justify-between px-4 py-3 ">
-                <View className="flex-row gap-2">
-                  <Button
-                    variant="destructive"
-                    onPress={() => setIsEditing(true)}
-                    className=""
-                  >
-                    <Text>Edit</Text>
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    onPress={() => setShowDeleteConfirm(true)}
-                  >
-                    <Text>Delete</Text>
-                  </Button>
-                </View>
+
+              <View className="flex-row justify-around items-center  px-4 py-10 w-full">
+                <Button
+                  variant="secondary"
+                  onPress={() => setShowDeleteConfirm(true)}
+                  className="px-5 py-3 rounded-[10px] w-[40%] flex flex-row gap-3 border border-solid"
+                >
+                  <MaterialCommunityIcons
+                    name="trash-can"
+                    size={20}
+                    color="black"
+                  />
+                  <Text className="text-black">Delete</Text>
+                </Button>
+                <Button
+                  variant="default"
+                  onPress={() => setIsEditing(true)}
+                  className="bg-black px-5 py-3 rounded-[10px] w-[40%] flex flex-row gap-3"
+                >
+                  <MaterialCommunityIcons
+                    name="pencil"
+                    size={20}
+                    color="#FFFFFF"
+                  />
+                  <Text className="text-white">Edit</Text>
+                </Button>
               </View>
             </>
           ) : (
@@ -148,16 +158,16 @@ export default function TransactionDetails() {
                   setEditForm((prev) => ({ ...prev, date: text }))
                 }
               />
-              <View className="flex-row gap-2 pt-4">
+              <View className="flex-row justify-around items-center  px-4 py-10 w-full">
                 <Button
                   variant="secondary"
                   onPress={() => setIsEditing(false)}
                   className="flex-1"
                 >
-                  Cancel
+                  <Text>Cancel</Text>
                 </Button>
                 <Button onPress={handleSave} className="flex-1">
-                  Save Changes
+                  <Text>Save Changes</Text>
                 </Button>
               </View>
             </View>
@@ -166,7 +176,7 @@ export default function TransactionDetails() {
       </ScrollView>
 
       {/* Delete Confirmation Sheet */}
-      <AlertDialog
+      {/* <AlertDialog
         open={showDeleteConfirm}
         // onClose={() => setShowDeleteConfirm(false)}
         // snapPoints={["25%"]}
@@ -196,7 +206,7 @@ export default function TransactionDetails() {
             </Button>
           </View>
         </View>
-      </AlertDialog>
+      </AlertDialog> */}
     </SafeAreaView>
   );
 }
