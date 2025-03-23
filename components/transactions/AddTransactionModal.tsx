@@ -12,7 +12,7 @@ import {
   Platform,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { useTransactions } from "@/context/TransactionContext";
+import { useTransactions } from "../../context/TransactionContext";
 
 interface AddTransactionModalProps {
   visible: boolean;

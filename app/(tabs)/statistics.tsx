@@ -54,7 +54,6 @@ export default function StatisticsScreen() {
           </Pressable>
         </View>
 
-        {/* Total Spending Card */}
         <LinearGradient
           colors={["#3B82F6", "#1D4ED8"]}
           style={styles.totalCard}
@@ -62,10 +61,11 @@ export default function StatisticsScreen() {
           end={{ x: 1, y: 1 }}
         >
           <Text style={styles.totalLabel}>Total Spending</Text>
-          <Text style={styles.totalAmount}>${totalExpenses.toFixed(2)}</Text>
+          <Text style={styles.totalAmount} className="pt-10">
+            ${totalExpenses.toFixed(2)}
+          </Text>
         </LinearGradient>
 
-        {/* Category Breakdown */}
         <View style={styles.categoriesSection}>
           <Text style={styles.sectionTitle}>Spending by Category</Text>
 
@@ -165,8 +165,6 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 32,
     fontWeight: "600",
-    marginTop: 8,
-    marginBottom: 24,
   },
   percentageChange: {
     flexDirection: "row",

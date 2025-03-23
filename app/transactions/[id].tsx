@@ -6,10 +6,10 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button } from "@/components/ui/button";
-import { AlertDialog } from "@/components/ui/alert-dialog";
-import React from "react";
 import { Text } from "@/components/ui/text";
 import { Label } from "@/components/ui/label";
+import DeleteTransactionDialog from "@/components/transactions/DeleteTransactionDialog";
+import React from "react";
 
 export default function TransactionDetails() {
   const { id } = useLocalSearchParams();
@@ -160,39 +160,13 @@ export default function TransactionDetails() {
           )}
         </View>
       </ScrollView>
-
-      {/* Delete Confirmation Sheet */}
-      {/* <AlertDialog
-        open={showDeleteConfirm}
-        // onClose={() => setShowDeleteConfirm(false)}
-        // snapPoints={["25%"]}
-      >
-        <View className="p-4 space-y-4">
-          <Text className="text-lg font-semibold text-slate-900">
-            Delete Transaction
-          </Text>
-          <Text className="text-slate-600">
-            Are you sure you want to delete this transaction? This action cannot
-            be undone.
-          </Text>
-          <View className="flex-row gap-2">
-            <Button
-              variant="secondary"
-              onPress={() => setShowDeleteConfirm(false)}
-              className="flex-1"
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="destructive"
-              onPress={handleDelete}
-              className="flex-1"
-            >
-              Delete
-            </Button>
-          </View>
-        </View>
-      </AlertDialog> */}
+      {showDeleteConfirm && (
+        <DeleteTransactionDialog
+          handleDelete={handleDelete}
+          id={transaction.id}
+          onClose={() => setShowDeleteConfirm(false)}
+        />
+      )}
     </SafeAreaView>
   );
 }

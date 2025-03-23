@@ -2,63 +2,22 @@ import { useState } from "react";
 import { View, StyleSheet, ScrollView, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
-import AddTransactionModal from "../../components/AddTransactionModal";
-import { useTransactions } from "../../context/TransactionContext";
+import AddTransactionModal from "@/components/transactions/AddTransactionModal";
+import { useTransactions } from "@/context/TransactionContext";
 import { router } from "expo-router";
 import { Text } from "@/components/ui/text";
+import EmptyTransactions from "@/components/transactions/EmptyTransactions";
+import TotalOverview from "@/components/transactions/TotalOverview";
 
 export default function HomeScreen() {
   const [transactionModalVisible, setTransactionModalVisible] = useState(false);
-  const {
-    transactions,
-    categories,
-    getTotalBalance,
-    getTotalIncome,
-    getTotalExpenses,
-  } = useTransactions();
+  const { transactions, categories } = useTransactions();
 
   return (
     <SafeAreaView className="flex-1">
       <ScrollView className="flex-1">
         {/* Balance Card */}
-        <LinearGradient
-          colors={["#3B82F6", "#1D4ED8"]}
-          style={styles.balanceCard}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-        >
-          <Text style={styles.balanceLabel}>Total Balance</Text>
-          <Text style={styles.balanceAmount}>
-            ${getTotalBalance().toFixed(2)}
-          </Text>
-          <View style={styles.balanceStats}>
-            <View style={styles.statItem}>
-              <MaterialCommunityIcons
-                name="arrow-down-circle"
-                size={24}
-                color="#4ADE80"
-              />
-              <Text style={styles.statLabel}>Income</Text>
-              <Text style={styles.statAmount}>
-                ${getTotalIncome().toFixed(2)}
-              </Text>
-            </View>
-            <View style={styles.statDivider} />
-            <View style={styles.statItem}>
-              <MaterialCommunityIcons
-                name="arrow-up-circle"
-                size={24}
-                color="#FB7185"
-              />
-              <Text style={styles.statLabel}>Expenses</Text>
-              <Text style={styles.statAmount}>
-                ${getTotalExpenses().toFixed(2)}
-              </Text>
-            </View>
-          </View>
-        </LinearGradient>
-
+        <TotalOverview />
         {/* Quick Actions */}
         <View style={styles.quickActions}>
           <Pressable
@@ -103,17 +62,7 @@ export default function HomeScreen() {
           )}
 
           {transactions.length === 0 ? (
-            <View className="justify-center items-center pt-20">
-              <MaterialCommunityIcons
-                name="receipt"
-                size={48}
-                color="#94A3B8"
-              />
-              <Text style={styles.emptyStateText}>No transactions yet</Text>
-              <Text style={styles.emptyStateSubtext}>
-                Add your first transaction to get started
-              </Text>
-            </View>
+            <EmptyTransactions />
           ) : (
             transactions.slice(0, 5).map((transaction) => {
               const category = categories.find(
@@ -203,55 +152,7 @@ const styles = StyleSheet.create({
   profileButton: {
     padding: 4,
   },
-  balanceCard: {
-    margin: 20,
-    padding: 24,
-    borderRadius: 24,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  balanceLabel: {
-    color: "#E2E8F0",
-    fontSize: 14,
-  },
-  balanceAmount: {
-    color: "#FFFFFF",
-    fontSize: 32,
-    fontWeight: "600",
-    marginTop: 8,
-  },
-  balanceStats: {
-    flexDirection: "row",
-    marginTop: 24,
-    paddingTop: 24,
-    borderTopWidth: 1,
-    borderTopColor: "rgba(255,255,255,0.2)",
-  },
-  statItem: {
-    flex: 1,
-    alignItems: "center",
-  },
-  statDivider: {
-    width: 1,
-    backgroundColor: "rgba(255,255,255,0.2)",
-  },
-  statLabel: {
-    color: "#E2E8F0",
-    fontSize: 12,
-    marginTop: 8,
-  },
-  statAmount: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "600",
-    marginTop: 4,
-  },
+
   quickActions: {
     flexDirection: "row",
     justifyContent: "space-around",
@@ -353,17 +254,5 @@ const styles = StyleSheet.create({
   transactionAmount: {
     fontSize: 14,
     fontWeight: "600",
-  },
-  emptyStateText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#0F172A",
-    marginTop: 16,
-  },
-  emptyStateSubtext: {
-    fontSize: 14,
-    color: "#64748B",
-    marginTop: 8,
-    textAlign: "center",
   },
 });

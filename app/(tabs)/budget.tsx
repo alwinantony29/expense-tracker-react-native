@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
+import { View, StyleSheet, ScrollView, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useBudgets } from "@/context/BudgetContext";
@@ -7,6 +7,8 @@ import { useTransactions } from "@/context/TransactionContext";
 import AddBudgetModal from "@/components/AddBudgetModal";
 import { toast } from "sonner-native";
 import { Budget } from "@/types";
+import { LinearGradient } from "expo-linear-gradient";
+import { Text } from "@/components/ui/text";
 
 export default function BudgetScreen() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -22,12 +24,10 @@ export default function BudgetScreen() {
     toast.success("Budget deleted successfully");
   };
 
-  // Calculate total spent
   const totalSpent = budgets.reduce((total, budget) => {
     return total + getCategorySpending(budget.category);
   }, 0);
 
-  // Calculate remaining budget
   const remainingBudget = getTotalBudget() - totalSpent;
 
   return (
@@ -45,27 +45,46 @@ export default function BudgetScreen() {
         </View>
 
         {/* Monthly Overview */}
-        <View style={styles.overviewCard}>
-          <Text style={styles.overviewTitle}>Monthly Overview</Text>
-          <View style={styles.overviewStats}>
-            <View style={styles.statItem}>
-              <Text style={styles.statLabel}>Total Budget</Text>
-              <Text style={styles.statAmount}>
-                ${getTotalBudget().toFixed(2)}
-              </Text>
-            </View>
-            <View style={styles.statItem}>
-              <Text style={styles.statLabel}>Spent</Text>
-              <Text style={styles.statAmount}>${totalSpent.toFixed(2)}</Text>
-            </View>
-            <View style={styles.statItem}>
-              <Text style={styles.statLabel}>Remaining</Text>
-              <Text style={styles.statAmount}>
-                ${remainingBudget.toFixed(2)}
-              </Text>
+        <LinearGradient
+          colors={["#3B82F6", "#1D4ED8"]}
+          style={{
+            margin: 20,
+            padding: 24,
+            borderRadius: 24,
+            shadowColor: "#000",
+            shadowOffset: {
+              width: 0,
+              height: 2,
+            },
+            shadowOpacity: 0.1,
+            shadowRadius: 8,
+            elevation: 3,
+          }}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+        >
+          <View>
+            <Text style={styles.overviewTitle}>Monthly Overview</Text>
+            <View style={styles.overviewStats}>
+              <View style={styles.statItem}>
+                <Text style={styles.statLabel}>Total Budget</Text>
+                <Text style={styles.statAmount}>
+                  ${getTotalBudget().toFixed(2)}
+                </Text>
+              </View>
+              <View style={styles.statItem}>
+                <Text style={styles.statLabel}>Spent</Text>
+                <Text style={styles.statAmount}>${totalSpent.toFixed(2)}</Text>
+              </View>
+              <View style={styles.statItem}>
+                <Text style={styles.statLabel}>Remaining</Text>
+                <Text style={styles.statAmount}>
+                  ${remainingBudget.toFixed(2)}
+                </Text>
+              </View>
             </View>
           </View>
-        </View>
+        </LinearGradient>
 
         {/* Budget Categories */}
         <View style={styles.categoriesSection}>
@@ -184,24 +203,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  overviewCard: {
-    margin: 20,
-    padding: 20,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
-  },
   overviewTitle: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#0F172A",
     marginBottom: 16,
   },
   overviewStats: {
@@ -213,13 +217,11 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     fontSize: 12,
-    color: "#64748B",
     marginBottom: 4,
   },
   statAmount: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#0F172A",
   },
   categoriesSection: {
     paddingHorizontal: 20,
