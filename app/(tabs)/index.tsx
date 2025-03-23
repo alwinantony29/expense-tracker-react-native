@@ -95,8 +95,8 @@ export default function HomeScreen() {
           {transactions.length > 0 && (
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>Recent Transactions</Text>
-              <Pressable>
-                {/* <Text style={styles.seeAll}>See all</Text> */}
+              <Pressable onPress={() => router.push("/transactions")}>
+                <Text style={styles.seeAll}>See all</Text>
               </Pressable>
             </View>
           )}
