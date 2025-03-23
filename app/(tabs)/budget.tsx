@@ -35,7 +35,9 @@ export default function BudgetScreen() {
       <ScrollView style={styles.scrollView}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Budget</Text>
+          <Text style={styles.headerTitle} className="pt-4">
+            Budget
+          </Text>
           <Pressable
             style={styles.addButton}
             onPress={() => setModalVisible(true)}
@@ -193,7 +195,6 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 24,
     fontWeight: "600",
-    color: "#0F172A",
   },
   addButton: {
     backgroundColor: "#3B82F6",

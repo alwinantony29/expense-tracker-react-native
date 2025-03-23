@@ -14,7 +14,7 @@ const Categories = () => {
   const incomeCategories = categories.filter((cat) => cat.type === "income");
 
   return (
-    <SafeAreaView style={styles.container} className="flex-1">
+    <SafeAreaView className="flex-1">
       {/* Tabs */}
       <View style={styles.tabContainer}>
         <Pressable
@@ -105,9 +105,6 @@ const Categories = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#F8FAFC",
-  },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",

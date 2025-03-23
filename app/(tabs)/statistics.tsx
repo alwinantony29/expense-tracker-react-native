@@ -43,7 +43,9 @@ export default function StatisticsScreen() {
       <ScrollView style={styles.scrollView}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Statistics</Text>
+          <Text style={styles.headerTitle} className="pt-4">
+            Statistics
+          </Text>
           <Pressable style={styles.filterButton}>
             <Text style={styles.filterText}>This Month</Text>
             <MaterialCommunityIcons

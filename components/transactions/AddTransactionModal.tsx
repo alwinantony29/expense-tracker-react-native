@@ -166,41 +166,43 @@ export default function AddTransactionModal({
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Category</Text>
               <View style={styles.categoriesContainer}>
-                {categories.map((category) => (
-                  <Pressable
-                    key={category.id}
-                    style={[
-                      styles.categoryItem,
-                      selectedCategory === category.id &&
-                        styles.selectedCategory,
-                    ]}
-                    onPress={() => setSelectedCategory(category.id)}
-                  >
-                    <View
+                {categories
+                  .filter((c) => c.type === transactionType)
+                  .map((category) => (
+                    <Pressable
+                      key={category.id}
                       style={[
-                        styles.categoryIcon,
-                        { backgroundColor: category.color },
+                        styles.categoryItem,
                         selectedCategory === category.id &&
-                          styles.selectedCategoryIcon,
+                          styles.selectedCategory,
                       ]}
+                      onPress={() => setSelectedCategory(category.id)}
                     >
-                      <MaterialCommunityIcons
-                        name={category.icon as any}
-                        size={20}
-                        color="#FFFFFF"
-                      />
-                    </View>
-                    <Text
-                      style={[
-                        styles.categoryName,
-                        selectedCategory === category.id &&
-                          styles.selectedCategoryText,
-                      ]}
-                    >
-                      {category.name}
-                    </Text>
-                  </Pressable>
-                ))}
+                      <View
+                        style={[
+                          styles.categoryIcon,
+                          { backgroundColor: category.color },
+                          selectedCategory === category.id &&
+                            styles.selectedCategoryIcon,
+                        ]}
+                      >
+                        <MaterialCommunityIcons
+                          name={category.icon as any}
+                          size={20}
+                          color="#FFFFFF"
+                        />
+                      </View>
+                      <Text
+                        style={[
+                          styles.categoryName,
+                          selectedCategory === category.id &&
+                            styles.selectedCategoryText,
+                        ]}
+                      >
+                        {category.name}
+                      </Text>
+                    </Pressable>
+                  ))}
               </View>
             </View>
 
