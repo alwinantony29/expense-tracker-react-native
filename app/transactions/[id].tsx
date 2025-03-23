@@ -1,4 +1,4 @@
-import { View, Text, ScrollView } from "react-native";
+import { View, ScrollView } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTransactions } from "../../context/TransactionContext";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -8,11 +8,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Button } from "@/components/ui/button";
 import { AlertDialog } from "@/components/ui/alert-dialog";
 import React from "react";
+import { Text } from "@/components/ui/text";
+import { Label } from "@/components/ui/label";
 
 export default function TransactionDetails() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
-  const { categories, deleteTransaction, getTransaction } = useTransactions();
+  const { categories, deleteTransaction, getTransaction, updateTransaction } =
+    useTransactions();
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
@@ -23,7 +26,6 @@ export default function TransactionDetails() {
     title: transaction?.title || "",
     amount: transaction?.amount.toString() || "0",
     date: transaction?.date || "",
-    // notes: transaction?.notes || "",
   });
 
   if (!transaction) {
@@ -44,16 +46,13 @@ export default function TransactionDetails() {
   }
 
   const handleSave = () => {
-    if (transaction) {
-      //   updateTransaction(transaction.id, {
-      //     ...transaction,
-      //     title: editForm.title,
-      //     amount: parseFloat(editForm.amount),
-      //     date: editForm.date,
-      //     // notes: editForm.notes,
-      //   });
-      setIsEditing(false);
-    }
+    updateTransaction(transaction.id, {
+      ...transaction,
+      title: editForm.title,
+      amount: parseFloat(editForm.amount),
+      date: editForm.date,
+    });
+    setIsEditing(false);
   };
 
   const handleDelete = () => {
@@ -62,9 +61,8 @@ export default function TransactionDetails() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-50">
+    <SafeAreaView className="flex-1 ">
       <ScrollView className="flex-1">
-        {/* Transaction Details */}
         <View className="p-4">
           <View className="flex-row items-center gap-4 mb-6">
             <View
@@ -78,11 +76,11 @@ export default function TransactionDetails() {
               />
             </View>
             <View>
-              <Text className="text-2xl font-semibold text-slate-900">
+              <Text className="text-2xl font-semibold">
                 {transaction.amount > 0 ? "+" : "-"}$
                 {Math.abs(transaction.amount).toFixed(2)}
               </Text>
-              <Text className="text-slate-600">{category?.name}</Text>
+              <Text>{category?.name}</Text>
             </View>
           </View>
 
@@ -90,83 +88,71 @@ export default function TransactionDetails() {
             <>
               <View className="flex flex-col gap-5">
                 <View>
-                  <Text className="text-sm font-medium text-slate-500">
-                    Title
-                  </Text>
-                  <Text className="text-2xl text-slate-900">
-                    {transaction.title}
-                  </Text>
+                  <Text className="text-sm font-medium">Title</Text>
+                  <Text className="text-2xl">{transaction.title}</Text>
                 </View>
                 <View>
-                  <Text className="text-sm font-medium text-slate-500">
-                    Date
-                  </Text>
-                  <Text className="text-2xl text-slate-900">
-                    {transaction.date}
-                  </Text>
+                  <Text className="text-sm font-medium">Date</Text>
+                  <Text className="text-2xl">{transaction.date}</Text>
                 </View>
               </View>
 
               <View className="flex-row justify-around items-center  px-4 py-10 w-full">
                 <Button
-                  variant="secondary"
+                  variant="default"
                   onPress={() => setShowDeleteConfirm(true)}
-                  className="px-5 py-3 rounded-[10px] w-[40%] flex flex-row gap-3 border border-solid"
+                  className="px-5 py-3 w-[40%] flex flex-row gap-3"
                 >
-                  <MaterialCommunityIcons
-                    name="trash-can"
-                    size={20}
-                    color="black"
-                  />
-                  <Text className="text-black">Delete</Text>
+                  <MaterialCommunityIcons name="trash-can" size={20} />
+                  <Text>Delete</Text>
                 </Button>
                 <Button
                   variant="default"
                   onPress={() => setIsEditing(true)}
-                  className="bg-black px-5 py-3 rounded-[10px] w-[40%] flex flex-row gap-3"
+                  className="px-5 py-3 w-[40%] flex flex-row gap-3"
                 >
-                  <MaterialCommunityIcons
-                    name="pencil"
-                    size={20}
-                    color="#FFFFFF"
-                  />
-                  <Text className="text-white">Edit</Text>
+                  <MaterialCommunityIcons name="pencil" size={20} />
+                  <Text>Edit</Text>
                 </Button>
               </View>
             </>
           ) : (
-            <View className="space-y-4">
+            <View className="flex flex-col gap-5">
+              <Label>Title</Label>
               <Input
-                // label="Title"
                 value={editForm.title}
                 onChangeText={(text) =>
                   setEditForm((prev) => ({ ...prev, title: text }))
                 }
               />
+              <Label>Amount</Label>
               <Input
-                // label="Amount"
                 value={editForm.amount}
                 keyboardType="numeric"
                 onChangeText={(text) =>
                   setEditForm((prev) => ({ ...prev, amount: text }))
                 }
               />
+              <Label>Date</Label>
               <Input
-                // label="Date"
                 value={editForm.date}
                 onChangeText={(text) =>
                   setEditForm((prev) => ({ ...prev, date: text }))
                 }
               />
-              <View className="flex-row justify-around items-center  px-4 py-10 w-full">
+              <View className="flex-row justify-around items-center px-4 py-10 w-full">
                 <Button
-                  variant="secondary"
+                  variant="outline"
                   onPress={() => setIsEditing(false)}
-                  className="flex-1"
+                  className="px-5 py-3 w-[40%] flex flex-row gap-3"
                 >
                   <Text>Cancel</Text>
                 </Button>
-                <Button onPress={handleSave} className="flex-1">
+                <Button
+                  onPress={handleSave}
+                  className="px-5 py-3 w-[40%] flex flex-row gap-3"
+                  variant={"default"}
+                >
                   <Text>Save Changes</Text>
                 </Button>
               </View>

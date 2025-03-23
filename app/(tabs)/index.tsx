@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
+import { View, StyleSheet, ScrollView, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import AddTransactionModal from "../../components/AddTransactionModal";
 import { useTransactions } from "../../context/TransactionContext";
 import { router } from "expo-router";
+import { Text } from "@/components/ui/text";
 
 export default function HomeScreen() {
   const [transactionModalVisible, setTransactionModalVisible] = useState(false);
@@ -18,8 +19,8 @@ export default function HomeScreen() {
   } = useTransactions();
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView}>
+    <SafeAreaView className="flex-1">
+      <ScrollView className="flex-1">
         {/* Balance Card */}
         <LinearGradient
           colors={["#3B82F6", "#1D4ED8"]}
@@ -183,13 +184,6 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#F8FAFC",
-  },
-  scrollView: {
-    flex: 1,
-  },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -292,7 +286,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#0F172A",
   },
   seeAll: {
     color: "#3B82F6",
@@ -351,7 +344,6 @@ const styles = StyleSheet.create({
   transactionTitle: {
     fontSize: 14,
     fontWeight: "500",
-    color: "#0F172A",
   },
   transactionDate: {
     fontSize: 12,

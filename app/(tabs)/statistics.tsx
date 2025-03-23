@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
+import { View, StyleSheet, ScrollView, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTransactions } from "../../context/TransactionContext";
+import { Text } from "@/components/ui/text";
 
 export default function StatisticsScreen() {
-  const [period, setPeriod] = useState("month");
+  // const [period, setPeriod] = useState("month");
   const { transactions, categories, getTotalExpenses } = useTransactions();
 
   // Filter expense transactions
@@ -124,7 +124,6 @@ export default function StatisticsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F8FAFC",
   },
   scrollView: {
     flex: 1,
@@ -139,7 +138,6 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 24,
     fontWeight: "600",
-    color: "#0F172A",
   },
   filterButton: {
     flexDirection: "row",
@@ -186,7 +184,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#0F172A",
     marginBottom: 16,
   },
   categoryItem: {
