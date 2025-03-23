@@ -120,7 +120,11 @@ export default function HomeScreen() {
               );
 
               return (
-                <Pressable key={transaction.id} style={styles.transaction}>
+                <Pressable
+                  onPress={() => router.push(`/transactions/${transaction.id}`)}
+                  key={transaction.id}
+                  style={styles.transaction}
+                >
                   <View style={styles.transactionLeft}>
                     <View
                       style={[

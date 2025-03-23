@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Pressable } from "react-native";
+import { View, Text, ScrollView } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTransactions } from "../../context/TransactionContext";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -6,6 +6,8 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button } from "@/components/ui/button";
+import { AlertDialog } from "@/components/ui/alert-dialog";
+import React from "react";
 
 export default function TransactionDetails() {
   const { id } = useLocalSearchParams();
@@ -62,29 +64,6 @@ export default function TransactionDetails() {
   return (
     <SafeAreaView className="flex-1 bg-slate-50">
       <ScrollView className="flex-1">
-        {/* Header */}
-        <View className="flex-row items-center justify-between px-4 py-3 bg-white border-b border-slate-200">
-          <Pressable onPress={() => router.back()} className="p-2 -ml-2">
-            <MaterialCommunityIcons
-              name="arrow-left"
-              size={24}
-              color="#0F172A"
-            />
-          </Pressable>
-          <View className="flex-row gap-2">
-            <Button
-              variant="secondary"
-              onPress={() => setIsEditing(true)}
-              className="bg-slate-100"
-            >
-              Edit
-            </Button>
-            <Button variant="danger" onPress={() => setShowDeleteConfirm(true)}>
-              Delete
-            </Button>
-          </View>
-        </View>
-
         {/* Transaction Details */}
         <View className="p-4">
           <View className="flex-row items-center gap-4 mb-6">
@@ -108,22 +87,43 @@ export default function TransactionDetails() {
           </View>
 
           {!isEditing ? (
-            <View className="space-y-4">
-              <View>
-                <Text className="text-sm font-medium text-slate-500">
-                  Title
-                </Text>
-                <Text className="text-lg text-slate-900">
-                  {transaction.title}
-                </Text>
+            <>
+              <View className="space-y-4">
+                <View>
+                  <Text className="text-sm font-medium text-slate-500">
+                    Title
+                  </Text>
+                  <Text className="text-lg text-slate-900">
+                    {transaction.title}
+                  </Text>
+                </View>
+                <View>
+                  <Text className="text-sm font-medium text-slate-500">
+                    Date
+                  </Text>
+                  <Text className="text-lg text-slate-900">
+                    {transaction.date}
+                  </Text>
+                </View>
               </View>
-              <View>
-                <Text className="text-sm font-medium text-slate-500">Date</Text>
-                <Text className="text-lg text-slate-900">
-                  {transaction.date}
-                </Text>
+              <View className="flex-row items-center justify-between px-4 py-3 ">
+                <View className="flex-row gap-2">
+                  <Button
+                    variant="destructive"
+                    onPress={() => setIsEditing(true)}
+                    className=""
+                  >
+                    <Text>Edit</Text>
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    onPress={() => setShowDeleteConfirm(true)}
+                  >
+                    <Text>Delete</Text>
+                  </Button>
+                </View>
               </View>
-            </View>
+            </>
           ) : (
             <View className="space-y-4">
               <Input
@@ -166,10 +166,10 @@ export default function TransactionDetails() {
       </ScrollView>
 
       {/* Delete Confirmation Sheet */}
-      <Sheet
+      <AlertDialog
         open={showDeleteConfirm}
-        onClose={() => setShowDeleteConfirm(false)}
-        snapPoints={["25%"]}
+        // onClose={() => setShowDeleteConfirm(false)}
+        // snapPoints={["25%"]}
       >
         <View className="p-4 space-y-4">
           <Text className="text-lg font-semibold text-slate-900">
@@ -187,12 +187,16 @@ export default function TransactionDetails() {
             >
               Cancel
             </Button>
-            <Button variant="danger" onPress={handleDelete} className="flex-1">
+            <Button
+              variant="destructive"
+              onPress={handleDelete}
+              className="flex-1"
+            >
               Delete
             </Button>
           </View>
         </View>
-      </Sheet>
+      </AlertDialog>
     </SafeAreaView>
   );
 }
