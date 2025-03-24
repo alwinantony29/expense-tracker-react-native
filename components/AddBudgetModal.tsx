@@ -12,9 +12,10 @@ import {
   Platform,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { toast } from "sonner-native";
 import { useTransactions } from "../context/TransactionContext";
-import { Budget } from "../context/BudgetContext";
+import { Budget } from "@/types";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { useToast } from "react-native-toast-notifications";
 
 interface AddBudgetModalProps {
   visible: boolean;
@@ -27,6 +28,7 @@ export default function AddBudgetModalAddBudgetModal({
   onClose,
   onAddBudget,
 }: AddBudgetModalProps) {
+  const toast = useToast();
   const { categories } = useTransactions();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [limit, setLimit] = useState("");
@@ -45,12 +47,12 @@ export default function AddBudgetModalAddBudgetModal({
 
   const handleAddBudget = () => {
     if (!selectedCategory) {
-      toast.error("Please select a category");
+      toast.show("Please select a category");
       return;
     }
 
     if (!limit || isNaN(parseFloat(limit))) {
-      toast.error("Please enter a valid limit");
+      toast.show("Please enter a valid limit");
       return;
     }
 
@@ -62,7 +64,7 @@ export default function AddBudgetModalAddBudgetModal({
     };
 
     onAddBudget(newBudget);
-    toast.success("Budget added successfully");
+    toast.show("Budget added successfully");
     resetForm();
     onClose();
   };
@@ -74,126 +76,132 @@ export default function AddBudgetModalAddBudgetModal({
       visible={visible}
       onRequestClose={onClose}
     >
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.container}
-      >
-        <View style={styles.modalContent}>
-          <View style={styles.header}>
-            <Text style={styles.headerTitle}>Add Budget</Text>
-            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <MaterialCommunityIcons name="close" size={24} color="#64748B" />
-            </TouchableOpacity>
-          </View>
-
-          <ScrollView style={styles.form}>
-            {/* Period Selector */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Budget Period</Text>
-              <View style={styles.periodSelector}>
-                <Pressable
-                  style={[
-                    styles.periodButton,
-                    period === "monthly" && styles.selectedPeriodButton,
-                  ]}
-                  onPress={() => setPeriod("monthly")}
-                >
-                  <Text
-                    style={[
-                      styles.periodText,
-                      period === "monthly" && styles.selectedPeriodText,
-                    ]}
-                  >
-                    Monthly
-                  </Text>
-                </Pressable>
-                <Pressable
-                  style={[
-                    styles.periodButton,
-                    period === "weekly" && styles.selectedPeriodButton,
-                  ]}
-                  onPress={() => setPeriod("weekly")}
-                >
-                  <Text
-                    style={[
-                      styles.periodText,
-                      period === "weekly" && styles.selectedPeriodText,
-                    ]}
-                  >
-                    Weekly
-                  </Text>
-                </Pressable>
-              </View>
-            </View>
-
-            {/* Limit Input */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Budget Limit</Text>
-              <View style={styles.amountInputContainer}>
-                <Text style={styles.currencySymbol}>$</Text>
-                <TextInput
-                  style={styles.amountInput}
-                  placeholder="0.00"
-                  keyboardType="numeric"
-                  value={limit}
-                  onChangeText={setLimit}
+      <GestureHandlerRootView>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.container}
+        >
+          <View style={styles.modalContent}>
+            <View style={styles.header}>
+              <Text style={styles.headerTitle}>Add Budget</Text>
+              <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                <MaterialCommunityIcons
+                  name="close"
+                  size={24}
+                  color="#64748B"
                 />
-              </View>
+              </TouchableOpacity>
             </View>
 
-            {/* Category Selector */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Category</Text>
-              <View style={styles.categoriesContainer}>
-                {expenseCategories.map((category) => (
+            <ScrollView style={styles.form}>
+              {/* Period Selector */}
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Budget Period</Text>
+                <View style={styles.periodSelector}>
                   <Pressable
-                    key={category.id}
                     style={[
-                      styles.categoryItem,
-                      selectedCategory === category.id &&
-                        styles.selectedCategory,
+                      styles.periodButton,
+                      period === "monthly" && styles.selectedPeriodButton,
                     ]}
-                    onPress={() => setSelectedCategory(category.id)}
+                    onPress={() => setPeriod("monthly")}
                   >
-                    <View
-                      style={[
-                        styles.categoryIcon,
-                        { backgroundColor: category.color },
-                        selectedCategory === category.id &&
-                          styles.selectedCategoryIcon,
-                      ]}
-                    >
-                      <MaterialCommunityIcons
-                        name={category.icon as any}
-                        size={20}
-                        color="#FFFFFF"
-                      />
-                    </View>
                     <Text
                       style={[
-                        styles.categoryName,
-                        selectedCategory === category.id &&
-                          styles.selectedCategoryText,
+                        styles.periodText,
+                        period === "monthly" && styles.selectedPeriodText,
                       ]}
                     >
-                      {category.name}
+                      Monthly
                     </Text>
                   </Pressable>
-                ))}
+                  <Pressable
+                    style={[
+                      styles.periodButton,
+                      period === "weekly" && styles.selectedPeriodButton,
+                    ]}
+                    onPress={() => setPeriod("weekly")}
+                  >
+                    <Text
+                      style={[
+                        styles.periodText,
+                        period === "weekly" && styles.selectedPeriodText,
+                      ]}
+                    >
+                      Weekly
+                    </Text>
+                  </Pressable>
+                </View>
               </View>
-            </View>
-          </ScrollView>
 
-          <View style={styles.footer}>
-            <TouchableOpacity
-              style={styles.addButton}
-              onPress={handleAddBudget}
-            >
-              <Text style={styles.addButtonText}>Add Budget</Text>
-            </TouchableOpacity>
+              {/* Limit Input */}
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Budget Limit</Text>
+                <View style={styles.amountInputContainer}>
+                  <Text style={styles.currencySymbol}>$</Text>
+                  <TextInput
+                    style={styles.amountInput}
+                    placeholder="0.00"
+                    keyboardType="numeric"
+                    value={limit}
+                    onChangeText={setLimit}
+                  />
+                </View>
+              </View>
+
+              {/* Category Selector */}
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Category</Text>
+                <View style={styles.categoriesContainer}>
+                  {expenseCategories.map((category) => (
+                    <Pressable
+                      key={category.id}
+                      style={[
+                        styles.categoryItem,
+                        selectedCategory === category.id &&
+                          styles.selectedCategory,
+                      ]}
+                      onPress={() => setSelectedCategory(category.id)}
+                    >
+                      <View
+                        style={[
+                          styles.categoryIcon,
+                          { backgroundColor: category.color },
+                          selectedCategory === category.id &&
+                            styles.selectedCategoryIcon,
+                        ]}
+                      >
+                        <MaterialCommunityIcons
+                          name={category.icon as any}
+                          size={20}
+                          color="#FFFFFF"
+                        />
+                      </View>
+                      <Text
+                        style={[
+                          styles.categoryName,
+                          selectedCategory === category.id &&
+                            styles.selectedCategoryText,
+                        ]}
+                      >
+                        {category.name}
+                      </Text>
+                    </Pressable>
+                  ))}
+                </View>
+              </View>
+            </ScrollView>
+
+            <View style={styles.footer}>
+              <TouchableOpacity
+                style={styles.addButton}
+                onPress={handleAddBudget}
+              >
+                <Text style={styles.addButtonText}>Add Budget</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      </KeyboardAvoidingView>
+        </KeyboardAvoidingView>
+      </GestureHandlerRootView>
     </Modal>
   );
 }

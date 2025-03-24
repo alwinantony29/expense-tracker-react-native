@@ -10,8 +10,8 @@ import {
   Platform,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { toast } from "sonner-native";
 import { useUser } from "@/context/UserContext";
+import { useToast } from "react-native-toast-notifications";
 
 interface EditProfileModalProps {
   visible: boolean;
@@ -22,25 +22,26 @@ export default function EditProfileModal({
   visible,
   onClose,
 }: EditProfileModalProps) {
+  const toast = useToast();
   const { profile, updateProfile } = useUser();
   const [name, setName] = useState(profile.name || "");
   const [email, setEmail] = useState(profile.email || "");
 
   const handleUpdateProfile = () => {
     if (!name.trim()) {
-      toast.error("Please enter your name");
+      toast.show("Please enter your name");
       return;
     }
 
     if (!email.trim()) {
-      toast.error("Please enter your email");
+      toast.show("Please enter your email");
       return;
     }
 
     // Simple email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      toast.error("Please enter a valid email");
+      toast.show("Please enter a valid email");
       return;
     }
 
@@ -49,7 +50,7 @@ export default function EditProfileModal({
       email: email.trim(),
     });
 
-    toast.success("Profile updated successfully");
+    toast.show("Profile updated successfully");
     onClose();
   };
 

@@ -16,7 +16,6 @@ export default function HomeScreen() {
   return (
     <SafeAreaView className="flex-1">
       <ScrollView className="flex-1">
-        {/* Balance Card */}
         <TotalOverview />
         {/* Quick Actions */}
         <View style={styles.quickActions}>

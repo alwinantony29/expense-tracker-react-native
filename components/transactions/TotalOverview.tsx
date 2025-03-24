@@ -27,14 +27,16 @@ const TotalOverview = () => {
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
     >
-      <Text style={{ fontSize: 14 }}>Total Balance</Text>
+      <Text style={{ fontSize: 14 }} className="text-white">
+        Total Balance
+      </Text>
 
       <Text
         style={{
           fontSize: 32,
           fontWeight: "600",
         }}
-        className="pt-10"
+        className="pt-10 text-white"
       >
         ${getTotalBalance().toFixed(2)}
       </Text>

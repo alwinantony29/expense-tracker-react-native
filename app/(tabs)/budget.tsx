@@ -5,12 +5,13 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useBudgets } from "@/context/BudgetContext";
 import { useTransactions } from "@/context/TransactionContext";
 import AddBudgetModal from "@/components/AddBudgetModal";
-import { toast } from "sonner-native";
 import { Budget } from "@/types";
 import { LinearGradient } from "expo-linear-gradient";
 import { Text } from "@/components/ui/text";
+import { useToast } from "react-native-toast-notifications";
 
 export default function BudgetScreen() {
+  const toast = useToast();
   const [modalVisible, setModalVisible] = useState(false);
   const { budgets, addBudget, deleteBudget, getTotalBudget } = useBudgets();
   const { categories, getCategorySpending } = useTransactions();
@@ -21,7 +22,7 @@ export default function BudgetScreen() {
 
   const handleDeleteBudget = (id: string) => {
     deleteBudget(id);
-    toast.success("Budget deleted successfully");
+    toast.show("Budget deleted successfully");
   };
 
   const totalSpent = budgets.reduce((total, budget) => {
@@ -66,21 +67,31 @@ export default function BudgetScreen() {
           end={{ x: 1, y: 1 }}
         >
           <View>
-            <Text style={styles.overviewTitle}>Monthly Overview</Text>
+            <Text style={styles.overviewTitle} className="text-white">
+              Monthly Overview
+            </Text>
             <View style={styles.overviewStats}>
               <View style={styles.statItem}>
-                <Text style={styles.statLabel}>Total Budget</Text>
-                <Text style={styles.statAmount}>
+                <Text style={styles.statLabel} className="text-white">
+                  Total Budget
+                </Text>
+                <Text style={styles.statAmount} className="text-white">
                   ${getTotalBudget().toFixed(2)}
                 </Text>
               </View>
               <View style={styles.statItem}>
-                <Text style={styles.statLabel}>Spent</Text>
-                <Text style={styles.statAmount}>${totalSpent.toFixed(2)}</Text>
+                <Text style={styles.statLabel} className="text-white">
+                  Spent
+                </Text>
+                <Text style={styles.statAmount} className="text-white">
+                  ${totalSpent.toFixed(2)}
+                </Text>
               </View>
               <View style={styles.statItem}>
-                <Text style={styles.statLabel}>Remaining</Text>
-                <Text style={styles.statAmount}>
+                <Text style={styles.statLabel} className="text-white">
+                  Remaining
+                </Text>
+                <Text style={styles.statAmount} className="text-white">
                   ${remainingBudget.toFixed(2)}
                 </Text>
               </View>

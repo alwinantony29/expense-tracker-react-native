@@ -19,6 +19,7 @@ import "../global.css";
 import { NAV_THEME } from "@/lib/constants";
 import { Platform } from "react-native";
 import { useColorScheme } from "@/lib/useColorScheme";
+import { ToastProvider } from "react-native-toast-notifications";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -68,20 +69,27 @@ export default function RootLayout() {
 
   return (
     <>
-      <ThemeProvider value={colorScheme === "dark" ? DARK_THEME : LIGHT_THEME}>
-        <StatusBar style={colorScheme} />
-        <UserProvider>
-          <BudgetProvider>
-            <TransactionProvider>
-              <Stack>
-                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                <Stack.Screen name="+not-found" />
-              </Stack>
-              <StatusBar style="auto" />
-            </TransactionProvider>
-          </BudgetProvider>
-        </UserProvider>
-      </ThemeProvider>
+      <ToastProvider>
+        <ThemeProvider
+          value={colorScheme === "dark" ? DARK_THEME : LIGHT_THEME}
+        >
+          <StatusBar style={colorScheme} />
+          <UserProvider>
+            <BudgetProvider>
+              <TransactionProvider>
+                <Stack>
+                  <Stack.Screen
+                    name="(tabs)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen name="+not-found" />
+                </Stack>
+                <StatusBar style="auto" />
+              </TransactionProvider>
+            </BudgetProvider>
+          </UserProvider>
+        </ThemeProvider>
+      </ToastProvider>
       <PortalHost />
     </>
   );

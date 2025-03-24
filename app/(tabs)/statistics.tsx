@@ -207,7 +207,6 @@ const styles = StyleSheet.create({
   },
   categoryName: {
     fontSize: 14,
-    color: "#0F172A",
   },
   categoryAmount: {
     fontSize: 14,

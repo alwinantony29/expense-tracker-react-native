@@ -11,7 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useUser } from "../context/UserContext";
 import EditProfileModal from "../components/EditProfileModal";
-import { toast } from "sonner-native";
+import { useToast } from "react-native-toast-notifications";
 
 // const menuItems = [
 // {
@@ -52,6 +52,7 @@ import { toast } from "sonner-native";
 // ];
 
 export default function ProfileScreen() {
+  const toast = useToast();
   const { profile, settings, updateSettings } = useUser();
   const [editProfileVisible, setEditProfileVisible] = useState(false);
 
@@ -62,18 +63,18 @@ export default function ProfileScreen() {
         break;
       case "notifications":
         updateSettings({ notifications: !settings.notifications });
-        toast.success(
+        toast.show(
           `Notifications ${settings.notifications ? "disabled" : "enabled"}`
         );
         break;
       case "payment":
-        toast.info("Payment methods feature coming soon");
+        toast.show("Payment methods feature coming soon");
         break;
       case "security":
-        toast.info("Security settings feature coming soon");
+        toast.show("Security settings feature coming soon");
         break;
       case "help":
-        toast.info("Help & Support feature coming soon");
+        toast.show("Help & Support feature coming soon");
         break;
       default:
         break;
